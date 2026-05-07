@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="../assets/js/page-loader.js"></script>
+<title>Dashboard — iStore Pro Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="stylesheet" href="../assets/css/admin.css"/>
+  <script src="../assets/js/admin.guard.js"></script>
+</head>
+<body class="admin-body">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__logo">
+      <span class="logo-icon">&#63743;</span> iStore Admin
+    </div>
+    <nav class="admin-sidebar__nav">
+      <div class="admin-nav-section">Principal</div>
+      <a href="index.html"       class="admin-nav-link active"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="produits.html"    class="admin-nav-link"><span class="nav-icon">📱</span> Produits</a>
+      <a href="clients.html"     class="admin-nav-link"><span class="nav-icon">👥</span> Clients</a>
+      <div class="admin-nav-section">Commandes</div>
+      <a href="commandes.html"  class="admin-nav-link"><span class="nav-icon">📦</span> Commandes</a>
+      <div class="admin-nav-section">Crédit</div>
+      <a href="dossiers.html"    class="admin-nav-link"><span class="nav-icon">📂</span> Dossiers</a>
+      <a href="paiements.html"   class="admin-nav-link"><span class="nav-icon">💳</span> Paiements</a>
+      <a href="quittances.html"  class="admin-nav-link"><span class="nav-icon">🧾</span> Quittances</a>
+      <div class="admin-nav-section">Compte</div>
+      <a href="../index.html"    class="admin-nav-link"><span class="nav-icon">🌐</span> Voir le site</a>
+      <a href="#" onclick="adminLogout()" class="admin-nav-link"><span class="nav-icon">🚪</span> Déconnexion</a>
+    </nav>
+    <div class="admin-sidebar__bottom">
+      <div class="admin-user">
+        <div class="admin-user__avatar" id="adminAvatar">A</div>
+        <div class="admin-user__info">
+          <strong id="adminName">Admin</strong>
+          <span>Administrateur</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="admin-topbar__title">Dashboard</h1>
+      <div class="admin-topbar__actions">
+        <span id="topbarDate" style="font-size:var(--text-sm);color:var(--text-muted);"></span>
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- STATS -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card"><div class="stat-card__icon">📱</div><div class="stat-card__label">Produits</div><div class="stat-card__value" id="statProducts">—</div></div>
+        <div class="stat-card"><div class="stat-card__icon">📦</div><div class="stat-card__label">Commandes</div><div class="stat-card__value" id="statOrders">—</div></div>
+        <div class="stat-card"><div class="stat-card__icon">👥</div><div class="stat-card__label">Clients</div><div class="stat-card__value" id="statClients">—</div></div>
+        <div class="stat-card"><div class="stat-card__icon">📂</div><div class="stat-card__label">Dossiers actifs</div><div class="stat-card__value" id="statDossiers">—</div></div>
+        <div class="stat-card"><div class="stat-card__icon">💳</div><div class="stat-card__label">Paiements en attente</div><div class="stat-card__value" id="statPending">—</div></div>
+      </div>
+
+      <!-- Paiements en attente -->
+      <div class="admin-card">
+        <div class="admin-card__header">
+          <h3>⏳ Paiements en attente de validation</h3>
+          <a href="paiements.html" class="btn btn--outline btn--sm">Voir tout</a>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr>
+              <th>Client</th><th>Dossier / Produit</th><th>Montant</th><th>Méthode</th><th>Date</th><th>Action</th>
+            </tr></thead>
+            <tbody id="pendingPaymentsBody">
+              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Commandes récentes -->
+      <div class="admin-card">
+        <div class="admin-card__header">
+          <h3>📦 Commandes récentes</h3>
+          <a href="commandes.html" class="btn btn--outline btn--sm">Voir tout</a>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr>
+              <th>N° Commande</th><th>Client</th><th>Produit</th><th>Type</th><th>Montant</th><th>Statut</th>
+            </tr></thead>
+            <tbody id="recentOrdersBody">
+              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Dossiers récents -->
+      <div class="admin-card">
+        <div class="admin-card__header">
+          <h3>📂 Dossiers récents</h3>
+          <a href="dossiers.html" class="btn btn--outline btn--sm">Voir tout</a>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr>
+              <th>Client</th><th>Produit</th><th>Total crédit</th><th>Restant</th><th>Statut</th><th>Date</th>
+            </tr></thead>
+            <tbody id="recentDossiersBody">
+              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script>
+    function adminLogout() { localStorage.clear(); window.location.href='../connexion.html'; }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Auth check
+      const token = localStorage.getItem('token');
+      const user  = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!token || user.role !== 'admin') { window.location.href='../connexion.html'; return; }
+      document.getElementById('adminName').textContent   = user.firstname || 'Admin';
+      document.getElementById('adminAvatar').textContent = (user.firstname||'A')[0].toUpperCase();
+      document.getElementById('topbarDate').textContent  = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+      // Stats
+      try {
+        const [products, dossiers, payments, clients, orders] = await Promise.all([
+          API.get('/products?limit=200'),
+          API.get('/dossiers?limit=200', true),
+          API.get('/payments?limit=200', true),
+          API.get('/admin/clients', true).catch(() => ({ total: '—' })),
+          API.get('/orders?limit=200', true).catch(() => ({ total: 0, orders: [] }))
+        ]);
+        document.getElementById('statProducts').textContent = products.length;
+        document.getElementById('statOrders').textContent   = orders.total || (orders.orders||[]).length || 0;
+        document.getElementById('statDossiers').textContent = dossiers.dossiers?.filter(d=>d.status==='EN_COURS').length || 0;
+        document.getElementById('statPending').textContent  = payments.payments?.filter(p=>p.statut==='EN_ATTENTE').length || 0;
+        document.getElementById('statClients').textContent  = clients.total || '—';
+
+        // Paiements en attente
+        const pending = (payments.payments || []).filter(p => p.statut === 'EN_ATTENTE');
+        const tbody   = document.getElementById('pendingPaymentsBody');
+        if (!pending.length) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Aucun paiement en attente ✓</td></tr>';
+        } else {
+          tbody.innerHTML = pending.slice(0,10).map(p => `
+            <tr>
+              <td><strong>${p.client?.firstname} ${p.client?.lastname}</strong><br><small style="color:var(--text-muted)">${p.client?.email}</small></td>
+              <td>${p.dossier ? formatPrice(p.dossier.montantRestant) + ' restant' : '—'}</td>
+              <td><strong style="color:var(--primary)">${formatPrice(p.montant)}</strong></td>
+              <td>${p.methode}</td>
+              <td>${formatDate(p.createdAt)}</td>
+              <td><a href="paiements.html?id=${p._id}" class="btn btn--primary btn--sm">Valider</a></td>
+            </tr>`).join('');
+        }
+
+        // Dossiers récents
+        const recent = (dossiers.dossiers || []).slice(0,8);
+        const tbody2 = document.getElementById('recentDossiersBody');
+        const sColors = { EN_ATTENTE:'status--pending', EN_COURS:'status--active', TERMINE:'status--done' };
+        const sLabels = { EN_ATTENTE:'En attente', EN_COURS:'En cours', TERMINE:'Terminé' };
+        tbody2.innerHTML = recent.map(d => `
+          <tr>
+            <td>${d.client?.firstname} ${d.client?.lastname}</td>
+            <td>${d.product?.name || '—'}</td>
+            <td>${formatPrice(d.coutTotalCredit)}</td>
+            <td style="color:var(--error)">${formatPrice(d.montantRestant)}</td>
+            <td><span class="status ${sColors[d.status]||''}">${sLabels[d.status]||d.status}</span></td>
+            <td>${formatDate(d.createdAt)}</td>
+          </tr>`).join('');
+        // Commandes récentes
+        const recentOrders = (orders.orders || []).slice(0,6);
+        const tbody3 = document.getElementById('recentOrdersBody');
+        const oColors = { EN_ATTENTE:'status--pending', CONFIRMEE:'status--active', EN_PREPARATION:'status--active', EXPEDIEE:'status--done', LIVREE:'status--done', ANNULEE:'status--error' };
+        const oLabels = { EN_ATTENTE:'En attente', CONFIRMEE:'Confirmée', EN_PREPARATION:'En prép.', EXPEDIEE:'Expédiée', LIVREE:'Livrée ✓', ANNULEE:'Annulée' };
+        tbody3.innerHTML = recentOrders.length ? recentOrders.map(o => `
+          <tr>
+            <td style="font-family:monospace;font-size:var(--text-xs);color:var(--primary)">${o.numeroCommande||'—'}</td>
+            <td>${o.client?.firstname||''} ${o.client?.lastname||''}</td>
+            <td>${o.product?.name||'—'}</td>
+            <td>${o.typePaiement==='comptant'?'<span class="badge badge--primary">💰 Comptant</span>':'<span class="badge badge--gold">📋 Crédit</span>'}</td>
+            <td><strong>${formatPrice(o.prixTotal)}</strong></td>
+            <td><span class="status ${oColors[o.statut]||''}">${oLabels[o.statut]||o.statut}</span></td>
+          </tr>`).join('') :
+          '<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:var(--text-muted);">Aucune commande.</td></tr>';
+
+      } catch(e) { console.error(e); }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+  <defs>
+    <!-- Dégradé or principal -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#FFD700"/>
+      <stop offset="45%"  stop-color="#C9A84C"/>
+      <stop offset="100%" stop-color="#8B6914"/>
+    </linearGradient>
+    <!-- Dégradé bleu Apple -->
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#1A83F5"/>
+      <stop offset="100%" stop-color="#0055CC"/>
+    </linearGradient>
+    <!-- Dégradé fond icône -->
+    <linearGradient id="iconBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#1D1D1F"/>
+      <stop offset="100%" stop-color="#0a0f1e"/>
+    </linearGradient>
+    <!-- Dégradé texte iStore -->
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="60%"  stop-color="#f0f0f0"/>
+      <stop offset="100%" stop-color="#C9A84C"/>
+    </linearGradient>
+    <!-- Ombre portée icône -->
+    <filter id="iconShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(201,168,76,0.35)"/>
+    </filter>
+    <!-- Ombre texte -->
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ── ICÔNE GAUCHE ─────────────────────────────────────── -->
+  <!-- Fond carré arrondi style App Store -->
+  <rect x="4" y="8" width="64" height="64" rx="16" fill="url(#iconBg)" filter="url(#iconShadow)"/>
+
+  <!-- Bordure dorée fine -->
+  <rect x="4" y="8" width="64" height="64" rx="16" fill="none"
+        stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.8"/>
+
+  <!-- Reflet subtil haut-gauche -->
+  <rect x="4" y="8" width="32" height="32" rx="16 0 0 0"
+        fill="rgba(255,255,255,0.04)"/>
+
+  <!-- Lettre "i" stylisée -->
+  <!-- Barre du i (point) -->
+  <circle cx="36" cy="24" r="4.5" fill="url(#goldGrad)"/>
+
+  <!-- Corps du i -->
+  <rect x="32.5" y="31" width="7" height="24" rx="3.5" fill="url(#goldGrad)"/>
+
+  <!-- Soulignement (serif discret) -->
+  <rect x="26" y="55" width="20" height="2" rx="1" fill="url(#goldGrad)" opacity="0.6"/>
+
+  <!-- Étoile/étincelle décorative haut-droit de l'icône -->
+  <g transform="translate(52, 18)" opacity="0.9">
+    <polygon points="0,-5 1.2,-1.2 5,0 1.2,1.2 0,5 -1.2,1.2 -5,0 -1.2,-1.2"
+             fill="url(#goldGrad)"/>
+  </g>
+
+  <!-- Petit point lumineux bas-gauche -->
+  <circle cx="14" cy="60" r="2" fill="rgba(201,168,76,0.5)"/>
+
+  <!-- ── TEXTE "iStore" ─────────────────────────────────────── -->
+  <!-- Ombre portée texte -->
+  <text x="82" y="52"
+        font-family="-apple-system, 'SF Pro Display', BlinkMacSystemFont, Helvetica, Arial, sans-serif"
+        font-size="36" font-weight="800" letter-spacing="-1.5"
+        fill="rgba(0,0,0,0.3)">iStore</text>
+
+  <!-- Texte principal "iStore" avec dégradé -->
+  <text x="80" y="50"
+        font-family="-apple-system, 'SF Pro Display', BlinkMacSystemFont, Helvetica, Arial, sans-serif"
+        font-size="36" font-weight="800" letter-spacing="-1.5"
+        fill="url(#textGrad)">iStore</text>
+
+  <!-- ── TEXTE "Pro" ────────────────────────────────────────── -->
+  <!-- Badge "Pro" arrondi -->
+  <rect x="225" y="28" width="52" height="26" rx="7"
+        fill="url(#goldGrad)" opacity="0.95"/>
+
+  <!-- Reflet sur badge Pro -->
+  <rect x="225" y="28" width="52" height="13" rx="7 7 0 0"
+        fill="rgba(255,255,255,0.18)"/>
+
+  <!-- Texte Pro -->
+  <text x="251" y="46"
+        font-family="-apple-system, 'SF Pro Display', BlinkMacSystemFont, Helvetica, Arial, sans-serif"
+        font-size="14" font-weight="800" letter-spacing="0.5"
+        text-anchor="middle"
+        fill="#1D1D1F">PRO</text>
+
+  <!-- ── TAGLINE ────────────────────────────────────────────── -->
+  <text x="80" y="67"
+        font-family="-apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif"
+        font-size="10.5" font-weight="500" letter-spacing="2.5"
+        fill="rgba(201,168,76,0.75)"
+        text-transform="uppercase">VOTRE SPÉCIALISTE iPHONE</text>
+
+  <!-- ── LIGNE DÉCORATIVE ───────────────────────────────────── -->
+  <!-- Ligne fine dorée sous le texte principal -->
+  <line x1="80" y1="56" x2="218" y2="56"
+        stroke="url(#goldGrad)" stroke-width="1" opacity="0.3"/>
+
+</svg>

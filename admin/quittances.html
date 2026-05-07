@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="../assets/js/page-loader.js"></script>
+<title>Quittances — iStore Pro Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="stylesheet" href="../assets/css/admin.css"/>
+  <script src="../assets/js/admin.guard.js"></script>
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__logo" style="-webkit-text-fill-color:initial;background:none;padding:1rem 1.25rem;">
+  <img src="../assets/images/logo-header.svg" alt="iStore Pro" style="height:34px;width:auto;filter:brightness(1.1)"/>
+</div>
+    <nav class="admin-sidebar__nav">
+      <div class="admin-nav-section">Principal</div>
+      <a href="index.html"      class="admin-nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="produits.html"   class="admin-nav-link"><span class="nav-icon">📱</span> Produits</a>
+      <a href="clients.html"    class="admin-nav-link"><span class="nav-icon">👥</span> Clients</a>
+      <div class="admin-nav-section">Commandes</div>
+      <a href="commandes.html"  class="admin-nav-link"><span class="nav-icon">📦</span> Commandes</a>
+      <div class="admin-nav-section">Crédit</div>
+      <a href="dossiers.html"   class="admin-nav-link"><span class="nav-icon">📂</span> Dossiers</a>
+      <a href="paiements.html"  class="admin-nav-link"><span class="nav-icon">💳</span> Paiements</a>
+      <a href="quittances.html" class="admin-nav-link active"><span class="nav-icon">🧾</span> Quittances</a>
+      <div class="admin-nav-section">Compte</div>
+      <a href="../index.html"   class="admin-nav-link"><span class="nav-icon">🌐</span> Voir le site</a>
+      <a href="#" onclick="adminLogout()" class="admin-nav-link"><span class="nav-icon">🚪</span> Déconnexion</a>
+    </nav>
+    <div class="admin-sidebar__bottom">
+      <div class="admin-user">
+        <div class="admin-user__avatar" id="adminAvatar">A</div>
+        <div class="admin-user__info"><strong id="adminName">Admin</strong><span>Administrateur</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="admin-topbar__title">Quittances PDF</h1>
+    </div>
+    <div class="admin-content">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <div style="background:var(--bg-alt);border-radius:var(--radius);padding:.75rem 1.25rem;font-size:var(--text-sm);">
+          🔒 <strong>Règle :</strong> Chaque quittance est liée à un seul paiement validé. Aucune génération manuelle possible.
+        </div>
+        <span id="totalCount" style="font-size:var(--text-sm);color:var(--text-muted);"></span>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr>
+              <th>Numéro</th><th>Client</th><th>Produit</th>
+              <th>Montant payé</th><th>Reste après</th><th>Date</th><th>PDF</th>
+            </tr></thead>
+            <tbody id="receiptsBody">
+              <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script>
+    function adminLogout() { localStorage.clear(); window.location.href='../connexion.html'; }
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!localStorage.getItem('token') || user.role !== 'admin') window.location.href = '../connexion.html';
+    document.getElementById('adminName').textContent   = user.firstname || 'Admin';
+    document.getElementById('adminAvatar').textContent = (user.firstname||'A')[0].toUpperCase();
+
+    async function loadReceipts() {
+      const tbody = document.getElementById('receiptsBody');
+      try {
+        const res      = await API.get('/receipts?limit=100', true);
+        const receipts = res.receipts || [];
+        document.getElementById('totalCount').textContent = `${receipts.length} quittance(s)`;
+
+        if (!receipts.length) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Aucune quittance générée pour l\'instant.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = receipts.map(r => `
+          <tr>
+            <td><strong style="color:var(--primary);font-family:monospace;">${r.numero}</strong></td>
+            <td>
+              ${r.snapshot?.clientNom || `${r.client?.firstname||''} ${r.client?.lastname||''}`}<br>
+              <small style="color:var(--text-muted)">${r.snapshot?.clientEmail || r.client?.email || ''}</small>
+            </td>
+            <td>${r.snapshot?.produitNom || '—'} ${r.snapshot?.produitStorage || ''}</td>
+            <td><strong style="color:var(--success)">${formatPrice(r.snapshot?.montantPaye || r.payment?.montant || 0)}</strong></td>
+            <td style="color:${(r.snapshot?.montantRestant || 0) <= 0.01 ? 'var(--success)' : 'var(--error)'}">
+              ${(r.snapshot?.montantRestant || 0) <= 0.01
+                ? '✓ Soldé'
+                : formatPrice(r.snapshot?.montantRestant || 0)}
+            </td>
+            <td>${formatDate(r.createdAt)}</td>
+            <td>
+              ${r.pdfUrl
+                ? `<a href="http://localhost:5000${r.pdfUrl}" target="_blank" class="btn btn--primary btn--sm">
+                    📄 Télécharger
+                   </a>`
+                : '<span style="color:var(--text-muted);">—</span>'}
+            </td>
+          </tr>`).join('');
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--error);">Erreur : ${e.message}</td></tr>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadReceipts);
+  </script>
+</body>
+</html>

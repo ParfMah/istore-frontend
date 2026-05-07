@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="assets/js/page-loader.js"></script>
+<title>Mon espace — iStore Pro</title>
+  <link rel="stylesheet" href="assets/css/global.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <style>
+    .client-layout{display:grid;grid-template-columns:240px 1fr;gap:var(--space-8);padding-top:var(--space-8);padding-bottom:var(--space-16);align-items:start;}
+    /* Sidebar client */
+    .client-sidebar{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);overflow:hidden;position:sticky;top:calc(var(--header-h)+var(--space-4));box-shadow:var(--shadow-sm);}
+    .client-sidebar__header{background:linear-gradient(135deg,var(--apple-dark),#0a1628);padding:var(--space-6);border-bottom:2px solid var(--gold);}
+    .client-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--gold-bright),var(--gold));display:flex;align-items:center;justify-content:center;font-size:var(--text-xl);font-weight:800;color:var(--apple-dark);margin-bottom:var(--space-3);}
+    .client-name{color:#fff;font-size:var(--text-md);font-weight:700;}
+    .client-email{color:rgba(255,255,255,.55);font-size:var(--text-xs);}
+    .client-nav{padding:var(--space-3) 0;}
+    .client-nav-link{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-5);font-size:var(--text-sm);color:var(--text-secondary);cursor:pointer;transition:all var(--transition);border-left:3px solid transparent;border:none;background:none;width:100%;text-align:left;font-family:var(--font);}
+    .client-nav-link:hover{background:var(--bg-alt);color:var(--text-primary);}
+    .client-nav-link.active{color:var(--gold-dark);background:var(--gold-light);border-left:3px solid var(--gold);font-weight:600;}
+    .client-nav-link .nav-icon{font-size:1.1rem;width:22px;text-align:center;}
+    .client-nav-link .badge-count{margin-left:auto;background:var(--primary);color:#fff;font-size:10px;font-weight:700;padding:.15em .5em;border-radius:var(--radius-full);}
+
+    /* Content */
+    .client-content{}
+    .client-panel{display:none;}
+    .client-panel.active{display:block;}
+
+    /* Stat cards */
+    .client-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);margin-bottom:var(--space-6);}
+    .client-stat{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:var(--space-5);text-align:center;border-top:3px solid var(--gold);}
+    .client-stat__icon{font-size:1.8rem;margin-bottom:var(--space-2);}
+    .client-stat__val{font-size:var(--text-2xl);font-weight:900;color:var(--apple-dark);}
+    .client-stat__label{font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-1);}
+
+    /* Order card */
+    .order-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);margin-bottom:var(--space-5);overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition);}
+    .order-card:hover{box-shadow:var(--shadow-md);}
+    .order-card__header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-5);background:linear-gradient(135deg,var(--bg-alt),var(--gold-light));border-bottom:1px solid var(--border-light);flex-wrap:wrap;gap:var(--space-3);}
+    .order-card__num{font-family:monospace;font-weight:800;color:var(--primary);font-size:var(--text-sm);}
+    .order-card__date{font-size:var(--text-xs);color:var(--text-muted);}
+    .order-card__body{display:grid;grid-template-columns:70px 1fr auto;gap:var(--space-4);padding:var(--space-5);align-items:center;}
+    .order-card__img{width:70px;height:70px;object-fit:cover;border-radius:var(--radius);background:var(--bg-alt);}
+    .order-card__info h4{font-size:var(--text-md);font-weight:700;margin-bottom:var(--space-1);}
+    .order-card__info p{font-size:var(--text-sm);color:var(--text-muted);}
+    .order-card__price{font-size:var(--text-xl);font-weight:800;color:var(--primary);white-space:nowrap;}
+    .order-card__footer{padding:var(--space-3) var(--space-5);border-top:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-3);background:var(--bg-alt);}
+
+    /* Dossier crédit card */
+    .dossier-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:var(--space-5);margin-bottom:var(--space-5);box-shadow:var(--shadow-sm);}
+    .dossier-card__header{display:flex;justify-content:space-between;align-items:start;margin-bottom:var(--space-4);flex-wrap:wrap;gap:var(--space-2);}
+    .dossier-card__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3);margin-bottom:var(--space-4);}
+    .dossier-stat{background:var(--bg-alt);border-radius:var(--radius);padding:var(--space-3);text-align:center;}
+    .dossier-stat p{font-size:var(--text-xs);color:var(--text-muted);margin-bottom:2px;}
+    .dossier-stat strong{font-size:var(--text-md);font-weight:800;}
+    .progress-bar{height:8px;background:var(--border-light);border-radius:99px;overflow:hidden;margin-bottom:var(--space-2);}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--gold));border-radius:99px;transition:width .5s ease;}
+
+    /* Paiements table */
+    .paiements-table{width:100%;border-collapse:collapse;font-size:var(--text-sm);}
+    .paiements-table th{padding:var(--space-3) var(--space-4);text-align:left;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);background:var(--bg-alt);border-bottom:1px solid var(--border-light);}
+    .paiements-table td{padding:var(--space-4);border-bottom:1px solid var(--border-light);vertical-align:middle;}
+    .paiements-table tr:last-child td{border-bottom:none;}
+    .paiements-table tr:hover td{background:var(--gold-light);}
+
+    /* Modal déclaration paiement */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:999;padding:var(--space-4);}
+    .modal{background:#fff;border-radius:var(--radius-xl);max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.25);}
+    .modal__header{padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--bg-alt),var(--gold-light));border-radius:var(--radius-xl) var(--radius-xl) 0 0;}
+    .modal__header h3{font-size:var(--text-lg);font-weight:800;}
+    .modal__close{font-size:1.2rem;cursor:pointer;background:none;border:none;color:var(--text-muted);}
+    .modal__body{padding:var(--space-6);}
+    .modal__footer{padding:var(--space-4) var(--space-6);border-top:1px solid var(--border-light);display:flex;gap:var(--space-3);justify-content:flex-end;}
+
+    @media(max-width:900px){.client-layout{grid-template-columns:1fr;}.client-sidebar{position:static;}.client-stats{grid-template-columns:1fr 1fr 1fr;}}
+    @media(max-width:600px){.client-stats{grid-template-columns:1fr 1fr;}.order-card__body{grid-template-columns:60px 1fr;}.order-card__price{grid-column:span 2;}.dossier-card__grid{grid-template-columns:1fr 1fr;}}
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="header__logo"><img src="assets/images/logo-header.svg" alt="iStore Pro" style="height:38px;width:auto;display:block;" /></a>
+    <nav class="header__nav" id="mainNav">
+      <a href="index.html"      class="nav-link">Accueil</a>
+      <a href="catalogue.html"  class="nav-link">Catalogue</a>
+      <a href="simulation.html" class="nav-link">Simuler un crédit</a>
+    </nav>
+    <div class="header__actions">
+      <button class="btn btn--outline-white btn--sm" onclick="Auth.logout()">Déconnexion</button>
+    </div>
+  </div>
+</header>
+
+<main class="container client-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="client-sidebar">
+    <div class="client-sidebar__header">
+      <div class="client-avatar" id="clientAvatar">?</div>
+      <div class="client-name"  id="clientName">Chargement…</div>
+      <div class="client-email" id="clientEmail"></div>
+    </div>
+    <nav class="client-nav">
+      <button class="client-nav-link active" onclick="showPanel('dashboard')">
+        <span class="nav-icon">📊</span> Tableau de bord
+      </button>
+      <button class="client-nav-link" onclick="showPanel('commandes')">
+        <span class="nav-icon">📦</span> Mes commandes
+        <span class="badge-count" id="badgeCommandes">0</span>
+      </button>
+      <button class="client-nav-link" onclick="showPanel('dossiers')">
+        <span class="nav-icon">💳</span> Mes crédits
+        <span class="badge-count" id="badgeDossiers">0</span>
+      </button>
+      <button class="client-nav-link" onclick="showPanel('paiements')">
+        <span class="nav-icon">🧾</span> Mes paiements
+      </button>
+      <button class="client-nav-link" onclick="showPanel('quittances')">
+        <span class="nav-icon">📄</span> Mes quittances
+      </button>
+      <button class="client-nav-link" onclick="window.location.href='catalogue.html'">
+        <span class="nav-icon">🛍️</span> Nouveau achat
+      </button>
+    </nav>
+  </aside>
+
+  <!-- CONTENU PRINCIPAL -->
+  <div class="client-content">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="client-panel active" id="panelDashboard">
+      <h2 style="font-size:var(--text-2xl);font-weight:800;margin-bottom:var(--space-6);">
+        Bonjour <span id="welcomeName" style="color:var(--gold-dark)"></span> 👋
+      </h2>
+      <div class="client-stats">
+        <div class="client-stat">
+          <div class="client-stat__icon">📦</div>
+          <div class="client-stat__val" id="statCommandes">—</div>
+          <div class="client-stat__label">Commande(s)</div>
+        </div>
+        <div class="client-stat">
+          <div class="client-stat__icon">💳</div>
+          <div class="client-stat__val" id="statDossiers">—</div>
+          <div class="client-stat__label">Dossier(s) crédit</div>
+        </div>
+        <div class="client-stat">
+          <div class="client-stat__icon">✅</div>
+          <div class="client-stat__val" id="statPaiements">—</div>
+          <div class="client-stat__label">Paiement(s) validé(s)</div>
+        </div>
+      </div>
+      <!-- Dernières commandes -->
+      <div id="dashLastOrders"></div>
+    </div>
+
+    <!-- ── COMMANDES ── -->
+    <div class="client-panel" id="panelCommandes">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-6);">
+        <h2 style="font-size:var(--text-xl);font-weight:800;">Mes commandes</h2>
+        <a href="catalogue.html" class="btn btn--gold btn--sm">+ Nouvelle commande</a>
+      </div>
+      <div id="commandesList"><div class="loading-spinner">Chargement…</div></div>
+    </div>
+
+    <!-- ── DOSSIERS CRÉDIT ── -->
+    <div class="client-panel" id="panelDossiers">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-6);">
+        <h2 style="font-size:var(--text-xl);font-weight:800;">Mes dossiers de crédit</h2>
+      </div>
+      <div id="dossiersList"><div class="loading-spinner">Chargement…</div></div>
+    </div>
+
+    <!-- ── PAIEMENTS ── -->
+    <div class="client-panel" id="panelPaiements">
+      <h2 style="font-size:var(--text-xl);font-weight:800;margin-bottom:var(--space-6);">Mes paiements</h2>
+      <div style="overflow-x:auto;">
+        <table class="paiements-table" id="paiementsTable">
+          <thead><tr><th>Date</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Quittance</th></tr></thead>
+          <tbody id="paiementsBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── QUITTANCES ── -->
+    <div class="client-panel" id="panelQuittances">
+      <h2 style="font-size:var(--text-xl);font-weight:800;margin-bottom:var(--space-6);">Mes quittances PDF</h2>
+      <div id="quittancesList"><div class="loading-spinner">Chargement…</div></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL : Déclarer un paiement crédit -->
+<div class="modal-overlay" id="payModal" style="display:none">
+  <div class="modal">
+    <div class="modal__header">
+      <h3>💳 Déclarer un paiement</h3>
+      <button class="modal__close" onclick="closePayModal()">✕</button>
+    </div>
+    <div class="modal__body">
+      <input type="hidden" id="payDossierId"/>
+      <div id="payAlert" class="alert" style="display:none"></div>
+      <div class="form-group">
+        <label>Montant à déclarer (€) *</label>
+        <input type="number" id="payMontant" class="form-input" placeholder="Ex : 150.00" min="1" step="0.01"/>
+      </div>
+      <div class="form-group">
+        <label>Méthode de paiement</label>
+        <select id="payMethode" class="select-input">
+          <option value="mobile_money">📱 Mobile Money</option>
+          <option value="virement">🏦 Virement bancaire</option>
+          <option value="especes">💵 Espèces (en boutique)</option>
+          <option value="autre">🔄 Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Référence de transaction (optionnel)</label>
+        <input type="text" id="payRef" class="form-input" placeholder="Ex : TXN12345678"/>
+      </div>
+      <div id="payInstructions" style="display:none" class="instructions-box" style="margin-top:1rem">
+        <h4 id="instrTitre"></h4>
+        <ol id="instrEtapes"></ol>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closePayModal()">Annuler</button>
+      <button class="btn btn--gold" id="submitPayBtn" onclick="submitPayment()">Déclarer le paiement</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer__bottom"><p>© 2025 iStore Pro. Tous droits réservés.</p></div>
+</footer>
+
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+// ── Auth check ────────────────────────────────────────────────
+if (!Auth.isLoggedIn()) window.location.href = 'connexion.html';
+const user = Auth.getUser();
+
+// ── Init interface ────────────────────────────────────────────
+if (user) {
+  const initials = (user.firstname?.[0] || '') + (user.lastname?.[0] || '');
+  document.getElementById('clientAvatar').textContent = initials.toUpperCase() || '?';
+  document.getElementById('clientName').textContent   = `${user.firstname} ${user.lastname}`;
+  document.getElementById('clientEmail').textContent  = user.email;
+  document.getElementById('welcomeName').textContent  = user.firstname;
+}
+
+// ── Navigation ────────────────────────────────────────────────
+function showPanel(name) {
+  document.querySelectorAll('.client-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.client-nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById(`panel${name.charAt(0).toUpperCase()+name.slice(1)}`).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  // Charger les données à la demande
+  if (name === 'commandes')  loadCommandes();
+  if (name === 'dossiers')   loadDossiers();
+  if (name === 'paiements')  loadPaiements();
+  if (name === 'quittances') loadQuittances();
+}
+
+// ── Statuts ───────────────────────────────────────────────────
+const ORDER_LABELS = { EN_ATTENTE:'En attente', CONFIRMEE:'Confirmée', EN_PREPARATION:'En préparation', EXPEDIEE:'Expédiée', LIVREE:'Livrée ✓', ANNULEE:'Annulée' };
+const ORDER_COLORS = { EN_ATTENTE:'#f59e0b', CONFIRMEE:'#0071E3', EN_PREPARATION:'#8b5cf6', EXPEDIEE:'#06b6d4', LIVREE:'#22c55e', ANNULEE:'#dc2626' };
+const PAY_BADGE    = { EN_ATTENTE:'badge--warning', VALIDE:'badge--success', REJETE:'badge--error' };
+const PAY_LABEL    = { EN_ATTENTE:'En attente', VALIDE:'Validé', REJETE:'Rejeté' };
+const DOSS_COLORS  = { EN_ATTENTE:'#f59e0b', EN_COURS:'#0071E3', TERMINE:'#22c55e' };
+const DOSS_LABELS  = { EN_ATTENTE:'En attente', EN_COURS:'En cours', TERMINE:'Soldé ✓' };
+
+// ── Dashboard ─────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const [ordersRes, dossiersRes, paymentsRes] = await Promise.all([
+      API.get('/orders/me', true).catch(() => []),
+      API.get('/dossiers/me', true).catch(() => []),
+      API.get('/payments/me', true).catch(() => [])
+    ]);
+
+    const orders   = ordersRes  || [];
+    const dossiers = dossiersRes|| [];
+    const payments = (paymentsRes||[]).filter(p => p.statut === 'VALIDE');
+
+    document.getElementById('statCommandes').textContent = orders.length;
+    document.getElementById('statDossiers').textContent  = dossiers.length;
+    document.getElementById('statPaiements').textContent = payments.length;
+    document.getElementById('badgeCommandes').textContent= orders.length;
+    document.getElementById('badgeDossiers').textContent = dossiers.length;
+
+    // 3 dernières commandes
+    const last3 = orders.slice(0, 3);
+    if (last3.length) {
+      document.getElementById('dashLastOrders').innerHTML = `
+        <h3 style="font-size:var(--text-lg);font-weight:700;margin-bottom:var(--space-4);">Dernières commandes</h3>
+        ${last3.map(o => renderOrderCard(o, true)).join('')}
+        ${orders.length > 3 ? `<button class="btn btn--ghost" onclick="showPanel('commandes')" style="width:100%;margin-top:var(--space-4)">Voir toutes mes commandes (${orders.length})</button>` : ''}`;
+    } else {
+      document.getElementById('dashLastOrders').innerHTML = `
+        <div style="text-align:center;padding:4rem 2rem;color:var(--text-muted);">
+          <p style="font-size:3rem;margin-bottom:1rem">🛍️</p>
+          <p style="margin-bottom:1rem">Vous n'avez pas encore passé de commande.</p>
+          <a href="catalogue.html" class="btn btn--gold">Découvrir le catalogue</a>
+        </div>`;
+    }
+  } catch(e) { console.error(e); }
+}
+
+// ── Rendu commande ────────────────────────────────────────────
+function renderOrderCard(o, compact = false) {
+  const img  = o.product?.images?.[0] || 'assets/images/placeholder-phone.svg';
+  const date = formatDate(o.createdAt);
+  const color= ORDER_COLORS[o.statut] || '#86868b';
+  const label= ORDER_LABELS[o.statut] || o.statut;
+  const typeBadge = o.typePaiement === 'comptant'
+    ? '<span class="badge badge--primary">💰 Comptant</span>'
+    : '<span class="badge badge--gold">📋 Crédit</span>';
+
+  return `
+    <div class="order-card">
+      <div class="order-card__header">
+        <div>
+          <div class="order-card__num">${o.numeroCommande || '—'}</div>
+          <div class="order-card__date">${date}</div>
+        </div>
+        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+          ${typeBadge}
+          <span class="badge" style="background:${color}22;color:${color};border:1px solid ${color}44;">${label}</span>
+        </div>
+      </div>
+      <div class="order-card__body">
+        <img class="order-card__img" src="${img}" alt="${o.product?.name||''}" onerror="this.src='assets/images/placeholder-phone.svg'"/>
+        <div class="order-card__info">
+          <h4>${o.product?.name || '—'} ${o.product?.storage || ''}</h4>
+          <p>${o.product?.color || ''}</p>
+          <p style="margin-top:.25rem;color:var(--text-muted);font-size:var(--text-xs);">
+            🚚 ${o.adresseLivraison?.city || ''}, ${o.adresseLivraison?.country || ''}
+          </p>
+        </div>
+        <div class="order-card__price">${formatPrice(o.prixTotal)}</div>
+      </div>
+      ${!compact ? `
+      <div class="order-card__footer">
+        <span style="font-size:var(--text-xs);color:var(--text-muted);">
+          Méthode : ${o.methodePaiement || 'Crédit'}
+          ${o.statutPaiement ? ` · Paiement : <strong>${PAY_LABEL[o.statutPaiement]||o.statutPaiement}</strong>` : ''}
+        </span>
+        ${o.typePaiement === 'credit' && o.dossierCredit ? `
+          <button class="btn btn--gold btn--sm" onclick="showPanel('dossiers')">Voir mon crédit</button>` : ''}
+      </div>` : ''}
+    </div>`;
+}
+
+// ── Commandes ─────────────────────────────────────────────────
+async function loadCommandes() {
+  const el = document.getElementById('commandesList');
+  try {
+    const orders = await API.get('/orders/me', true);
+    if (!orders.length) {
+      el.innerHTML = `<div style="text-align:center;padding:4rem;color:var(--text-muted);">
+        <p style="font-size:3rem;margin-bottom:1rem">📦</p>
+        <p style="margin-bottom:1rem">Aucune commande pour le moment.</p>
+        <a href="catalogue.html" class="btn btn--gold">Voir le catalogue</a></div>`;
+      return;
+    }
+    el.innerHTML = orders.map(o => renderOrderCard(o, false)).join('');
+  } catch(e) {
+    el.innerHTML = `<p style="color:var(--error);padding:2rem">Erreur : ${e.message}</p>`;
+  }
+}
+
+// ── Dossiers crédit ───────────────────────────────────────────
+async function loadDossiers() {
+  const el = document.getElementById('dossiersList');
+  try {
+    const dossiers = await API.get('/dossiers/me', true);
+    if (!dossiers.length) {
+      el.innerHTML = `<div style="text-align:center;padding:4rem;color:var(--text-muted);">
+        <p style="font-size:3rem;margin-bottom:1rem">💳</p>
+        <p>Aucun dossier de crédit.</p>
+        <a href="catalogue.html" class="btn btn--gold" style="margin-top:1rem">Commander à crédit</a></div>`;
+      return;
+    }
+    el.innerHTML = dossiers.map(d => {
+      const pct   = Math.round(((d.montantPaye||0) / d.coutTotalCredit) * 100);
+      const color = DOSS_COLORS[d.status] || '#86868b';
+      const label = DOSS_LABELS[d.status] || d.status;
+      return `
+        <div class="dossier-card">
+          <div class="dossier-card__header">
+            <div>
+              <h3 style="font-size:var(--text-md);font-weight:700;">${d.product?.name || '—'} ${d.product?.storage||''}</h3>
+              <p style="font-size:var(--text-xs);color:var(--text-muted);">Ouvert le ${formatDate(d.createdAt)}</p>
+            </div>
+            <span class="badge" style="background:${color}22;color:${color};border:1px solid ${color}44;">${label}</span>
+          </div>
+          <div class="dossier-card__grid">
+            <div class="dossier-stat"><p>Total crédit</p><strong>${formatPrice(d.coutTotalCredit)}</strong></div>
+            <div class="dossier-stat"><p>Déjà payé</p><strong style="color:var(--success)">${formatPrice(d.montantPaye||0)}</strong></div>
+            <div class="dossier-stat"><p>Reste à payer</p><strong style="color:${d.montantRestant<=0?'var(--success)':'var(--error)'}">${d.montantRestant<=0?'Soldé ✓':formatPrice(d.montantRestant)}</strong></div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <p style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-4);">
+            ${pct}% remboursé · ${formatPrice(d.mensualite)} × ${d.dureesMois} mois · Taux ${(d.tauxInteret*100).toFixed(1)}%
+          </p>
+          ${d.status !== 'TERMINE' ? `
+            <button class="btn btn--gold btn--sm" onclick="openPayModal('${d._id}', ${d.montantRestant})">
+              💳 Déclarer un paiement
+            </button>` : `<span class="badge badge--success" style="font-size:var(--text-sm)">✓ Dossier entièrement remboursé</span>`}
+        </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = `<p style="color:var(--error);padding:2rem">Erreur : ${e.message}</p>`;
+  }
+}
+
+// ── Paiements ─────────────────────────────────────────────────
+async function loadPaiements() {
+  const tbody = document.getElementById('paiementsBody');
+  try {
+    const payments = await API.get('/payments/me', true);
+    if (!payments.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Aucun paiement déclaré.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = payments.map(p => `
+      <tr>
+        <td>${formatDate(p.createdAt)}</td>
+        <td><strong style="color:var(--primary)">${formatPrice(p.montant)}</strong></td>
+        <td style="color:var(--text-muted)">${p.methode||'—'}</td>
+        <td><span class="badge ${PAY_BADGE[p.statut]||'badge--neutral'}">${PAY_LABEL[p.statut]||p.statut}</span></td>
+        <td>${p.quittance?.pdfUrl
+          ? `<a href="http://localhost:5000${p.quittance.pdfUrl}" target="_blank" class="btn btn--outline btn--sm">📄 Télécharger</a>`
+          : '<span style="color:var(--text-muted);font-size:var(--text-xs)">Après validation</span>'}</td>
+      </tr>`).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--error);padding:2rem">Erreur : ${e.message}</td></tr>`;
+  }
+}
+
+// ── Quittances ────────────────────────────────────────────────
+async function loadQuittances() {
+  const el = document.getElementById('quittancesList');
+  try {
+    const receipts = await API.get('/receipts/me', true);
+    if (!receipts.length) {
+      el.innerHTML = `<div style="text-align:center;padding:4rem;color:var(--text-muted);">
+        <p style="font-size:3rem;margin-bottom:1rem">📄</p>
+        <p>Aucune quittance pour le moment. Les quittances apparaissent après validation de vos paiements.</p></div>`;
+      return;
+    }
+    el.innerHTML = `<div style="display:flex;flex-direction:column;gap:var(--space-4);">` +
+      receipts.map(r => `
+        <div style="background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:var(--space-5);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-4);">
+          <div>
+            <p style="font-family:monospace;font-weight:800;color:var(--primary);font-size:var(--text-md);">${r.numero}</p>
+            <p style="font-size:var(--text-sm);color:var(--text-muted);">${formatDate(r.createdAt)} · ${formatPrice(r.snapshot?.montantPaye||0)} payé</p>
+            <p style="font-size:var(--text-xs);color:${(r.snapshot?.montantRestant||0)<=0?'var(--success)':'var(--error)'};">
+              ${(r.snapshot?.montantRestant||0)<=0 ? '✓ Dossier soldé' : `Reste : ${formatPrice(r.snapshot?.montantRestant||0)}`}
+            </p>
+          </div>
+          ${r.pdfUrl
+            ? `<a href="http://localhost:5000${r.pdfUrl}" target="_blank" class="btn btn--gold">📄 Télécharger le PDF</a>`
+            : '<span style="color:var(--text-muted)">PDF non disponible</span>'}
+        </div>`).join('') + `</div>`;
+  } catch(e) {
+    el.innerHTML = `<p style="color:var(--error);padding:2rem">Erreur : ${e.message}</p>`;
+  }
+}
+
+// ── Modal paiement crédit ─────────────────────────────────────
+function openPayModal(dossierId, restant) {
+  document.getElementById('payDossierId').value = dossierId;
+  document.getElementById('payMontant').max = restant;
+  document.getElementById('payMontant').placeholder = `Max : ${formatPrice(restant)}`;
+  document.getElementById('payAlert').style.display       = 'none';
+  document.getElementById('payInstructions').style.display= 'none';
+  document.getElementById('payMontant').value = '';
+  document.getElementById('payRef').value     = '';
+  document.getElementById('payModal').style.display = 'flex';
+}
+function closePayModal() { document.getElementById('payModal').style.display = 'none'; }
+
+async function submitPayment() {
+  const dossierId = document.getElementById('payDossierId').value;
+  const montant   = parseFloat(document.getElementById('payMontant').value);
+  const methode   = document.getElementById('payMethode').value;
+  const ref       = document.getElementById('payRef').value.trim();
+  const alertEl   = document.getElementById('payAlert');
+  const btn       = document.getElementById('submitPayBtn');
+
+  if (!montant || montant <= 0) { showAlert(alertEl,'error','Saisissez un montant valide.'); return; }
+  btn.disabled = true; btn.textContent = 'Envoi…';
+  try {
+    const res = await API.post('/payments', { dossierId, montant, methode, referenceExterne: ref }, true);
+    if (res.instructions) {
+      document.getElementById('instrTitre').textContent = res.instructions.titre;
+      const ol = document.getElementById('instrEtapes');
+      ol.innerHTML = res.instructions.etapes.map(e=>`<li>${e}</li>`).join('');
+      document.getElementById('payInstructions').style.display = 'block';
+    }
+    showAlert(alertEl, 'success', '✓ Paiement déclaré ! En attente de validation.');
+    btn.textContent = '✓ Déclaré !';
+    setTimeout(() => { closePayModal(); loadDossiers(); loadPaiements(); }, 2500);
+  } catch(e) {
+    showAlert(alertEl,'error', e.message || 'Erreur lors de la déclaration.');
+    btn.disabled = false; btn.textContent = 'Déclarer le paiement';
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', loadDashboard);
+</script>
+</body>
+</html>

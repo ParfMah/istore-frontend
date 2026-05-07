@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="assets/js/page-loader.js"></script>
+<title>iStore Pro — Vente d'iPhone Neuf &amp; Occasion</title>
+  <link rel="stylesheet" href="assets/css/global.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <link rel="stylesheet" href="assets/css/pages/home.css"/>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="header__logo"><img src="assets/images/logo-header.svg" alt="iStore Pro" style="height:38px;width:auto;display:block;" /></a>
+    <nav class="header__nav" id="mainNav">
+      <a href="index.html"      class="nav-link active">Accueil</a>
+      <a href="catalogue.html"  class="nav-link">Catalogue</a>
+      <a href="simulation.html" class="nav-link">Simuler un crédit</a>
+      <a href="a-propos.html"   class="nav-link">À propos</a>
+      <a href="contact.html"    class="nav-link">Contact</a>
+    </nav>
+    <div class="header__actions">
+      <a href="connexion.html" class="btn btn--outline" id="authBtn">Connexion</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero__inner">
+    <div class="hero__text">
+      <span class="hero__badge">Nouveau — iPhone 17 disponible</span>
+      <h1 class="hero__title">L'iPhone que vous voulez,<br><span>au prix que vous méritez.</span></h1>
+      <p class="hero__subtitle">Neuf ou reconditionné, payez en plusieurs fois sans stress.<br>Livraison rapide · Garantie incluse · Crédit flexible.</p>
+      <div class="hero__cta">
+        <a href="catalogue.html"  class="btn btn--gold btn--lg">Voir le catalogue</a>
+        <a href="simulation.html" class="btn btn--outline-white btn--lg">Simuler mon crédit</a>
+      </div>
+    </div>
+    <div class="hero__image">
+      <img src="assets/images/hero-banner.svg" alt="iPhone 17 Pro Max"/>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <div class="features__grid">
+      <div class="feature-card"><span class="feature-card__icon">📦</span><h3>Livraison rapide</h3><p>Livraison sous 24 à 48h partout sur le territoire.</p></div>
+      <div class="feature-card"><span class="feature-card__icon">🛡️</span><h3>Garantie incluse</h3><p>Tous nos appareils sont garantis 6 à 12 mois.</p></div>
+      <div class="feature-card"><span class="feature-card__icon">💳</span><h3>Crédit flexible</h3><p>Apport dès 40%, taux dès 1.5%. Simulation gratuite.</p></div>
+      <div class="feature-card"><span class="feature-card__icon">🔒</span><h3>Paiement sécurisé</h3><p>Mobile Money, virement bancaire, paiement en main propre.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="featured">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Nos best-sellers</h2>
+      <a href="catalogue.html" class="btn btn--outline">Voir tout</a>
+    </div>
+    <div class="products-grid" id="featuredProducts">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  </div>
+</section>
+
+<section class="credit-banner">
+  <div class="container credit-banner__inner">
+    <div class="credit-banner__text">
+      <h2>Achetez maintenant,<br><span>payez à votre rythme.</span></h2>
+      <p>Simulez votre crédit en 30 secondes. Aucun engagement immédiat.</p>
+      <a href="simulation.html" class="btn btn--gold btn--lg">Démarrer la simulation</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <span class="logo-icon">&#63743;</span>
+      <strong>iStore Pro</strong>
+      <p>Votre spécialiste iPhone depuis 2020.</p>
+    </div>
+    <div class="footer__links">
+      <h4>Navigation</h4>
+      <a href="catalogue.html">Catalogue</a>
+      <a href="simulation.html">Simulateur</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="footer__links">
+      <h4>Mon compte</h4>
+      <a href="connexion.html">Connexion</a>
+      <a href="connexion.html#register">Créer un compte</a>
+      <a href="espace-client.html">Mon espace</a>
+        <a href="catalogue.html">Commander</a>
+    </div>
+    <div class="footer__contact">
+      <h4>Contact</h4>
+      <p>📧 contact@istorepro.com</p>
+      <p>📞 +33 1 23 45 67 89</p>
+      <p>📍 Paris, France</p>
+    </div>
+  </div>
+  <div class="footer__bottom"><p>© 2025 iStore Pro. Tous droits réservés.</p></div>
+</footer>
+
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/products.data.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const products = await API.get('/products?limit=4&featured=true');
+    const grid = document.getElementById('featuredProducts');
+    grid.innerHTML = '';
+    if (products.length) products.forEach(p => grid.insertAdjacentHTML('beforeend', renderProductCard(p)));
+    else grid.innerHTML = '<p class="text-muted">Chargement des produits…</p>';
+  } catch(e) {
+    document.getElementById('featuredProducts').innerHTML = '<p class="text-muted">Impossible de charger les produits.</p>';
+  }
+});
+</script>
+</body>
+</html>

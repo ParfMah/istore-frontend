@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" width="400" height="480">
+  <defs>
+    <radialGradient id="bg_iphone15-rose" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#FFF0F4"/>
+      <stop offset="100%" stop-color="#FFF0F4CC"/>
+    </radialGradient>
+    <linearGradient id="body_iphone15-rose" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8A0B0"/>
+      <stop offset="50%" stop-color="#E8A0B0EE"/>
+      <stop offset="100%" stop-color="#E8A0B0AA"/>
+    </linearGradient>
+    <linearGradient id="screen_iphone15-rose" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0d0d1a"/>
+    </linearGradient>
+    <linearGradient id="shine_iphone15-rose" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+      <stop offset="50%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <filter id="shadow_iphone15-rose">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="rgba(0,0,0,0.30)"/>
+    </filter>
+    <clipPath id="screen_clip_iphone15-rose">
+      <rect x="111" y="90" width="178" height="300" rx="10"/>
+    </clipPath>
+  </defs>
+
+  <!-- Fond dégradé page -->
+  <rect width="400" height="480" fill="url(#bg_iphone15-rose)"/>
+
+  <!-- Cercle décoratif arrière -->
+  <circle cx="200" cy="220" r="130" fill="#C9A84C" opacity="0.08"/>
+  <circle cx="200" cy="220" r="90"  fill="#C9A84C" opacity="0.06"/>
+
+  <!-- Corps iPhone (ombre portée) -->
+  <rect x="110" y="65" width="180" height="350" rx="36" fill="rgba(0,0,0,0.18)" filter="url(#shadow_iphone15-rose)" transform="translate(4,8)"/>
+
+  <!-- Corps iPhone principal -->
+  <rect x="110" y="65" width="180" height="350" rx="36" fill="url(#body_iphone15-rose)"/>
+
+  <!-- Cadre metallic -->
+  <rect x="110" y="65" width="180" height="350" rx="36" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Écran -->
+  <rect x="111" y="90" width="178" height="300" rx="10" fill="url(#screen_iphone15-rose)"/>
+
+  <!-- Contenu écran : horloge + interface -->
+  <text x="200" y="148" text-anchor="middle" font-family="'SF Pro Display',-apple-system,sans-serif" font-size="34" font-weight="300" fill="white" letter-spacing="-1">09:41</text>
+  <text x="200" y="172" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">Lundi 9 Septembre</text>
+
+  <!-- Icônes app simulées -->
+  <rect x="128" y="192" width="32" height="32" rx="8" fill="#0071E3" opacity="0.9"/>
+  <rect x="168" y="192" width="32" height="32" rx="8" fill="#34C759" opacity="0.9"/>
+  <rect x="208" y="192" width="32" height="32" rx="8" fill="#C9A84C" opacity="0.9"/>
+  <rect x="248" y="192" width="32" height="32" rx="8" fill="#FF9500" opacity="0.9"/>
+
+  <rect x="128" y="232" width="32" height="32" rx="8" fill="#FF3B30" opacity="0.9"/>
+  <rect x="168" y="232" width="32" height="32" rx="8" fill="#5856D6" opacity="0.9"/>
+  <rect x="208" y="232" width="32" height="32" rx="8" fill="#00C7BE" opacity="0.9"/>
+  <rect x="248" y="232" width="32" height="32" rx="8" fill="#FF2D55" opacity="0.9"/>
+
+  <!-- Barre dock -->
+  <rect x="122" y="280" width="156" height="52" rx="14" fill="rgba(255,255,255,0.12)"/>
+  <rect x="134" y="292" width="30" height="30" rx="8" fill="#0071E3" opacity="0.95"/>
+  <rect x="173" y="292" width="30" height="30" rx="8" fill="#25D366" opacity="0.95"/>
+  <rect x="212" y="292" width="30" height="30" rx="8" fill="#FF9500" opacity="0.95"/>
+  <rect x="251" y="292" width="30" height="30" rx="8" fill="#8E8E93" opacity="0.95"/>
+
+  <!-- Barre de navigation home -->
+  <rect x="165" y="352" width="70" height="4" rx="2" fill="rgba(255,255,255,0.5)"/>
+
+  <!-- Reflet brillant sur l'écran -->
+  <rect x="111" y="90" width="178" height="300" rx="10" fill="url(#shine_iphone15-rose)" opacity="0.4"/>
+
+  <!-- Notch / Dynamic Island -->
+  <rect x="162" y="92" width="76" height="22" rx="11" fill="#0a0a0a"/>
+  <circle cx="228" cy="103" r="4" fill="#1a1a1a"/>
+  <circle cx="228" cy="103" r="2" fill="#2d2d2d"/>
+
+  <!-- Boutons latéraux -->
+  <rect x="107" y="148" width="5" height="36" rx="2.5" fill="#C9A84C" opacity="0.7"/>
+  <rect x="107" y="196" width="5" height="26" rx="2.5" fill="#C9A84C" opacity="0.7"/>
+  <rect x="107" y="230" width="5" height="26" rx="2.5" fill="#C9A84C" opacity="0.7"/>
+  <rect x="288" y="165" width="5" height="46" rx="2.5" fill="#C9A84C" opacity="0.7"/>
+
+  <!-- Caméra arrière (stylisée, visible en transparence) -->
+  <rect x="126" y="75" width="52" height="48" rx="12" fill="#E8A0B0" stroke="#C9A84C" stroke-width="1" opacity="0.5"/>
+  <circle cx="148" cy="91" r="9" fill="#0a0a0a" stroke="#C9A84C" stroke-width="1" opacity="0.8"/>
+  <circle cx="163" cy="108" r="9" fill="#0a0a0a" stroke="#C9A84C" stroke-width="1" opacity="0.8"/>
+  <circle cx="148" cy="108" r="5" fill="#0a0a0a" opacity="0.6"/>
+  <circle cx="148" cy="91" r="4" fill="#1a1a2e" opacity="0.9"/>
+  <circle cx="148" cy="91" r="2" fill="#2d3f6e" opacity="0.8"/>
+  <circle cx="163" cy="108" r="4" fill="#1a1a2e" opacity="0.9"/>
+  <circle cx="163" cy="108" r="2" fill="#2d3f6e" opacity="0.8"/>
+
+  <!-- Shine corps -->
+  <rect x="110" y="65" width="60" height="350" rx="36" fill="rgba(255,255,255,0.06)"/>
+
+  <!-- Badge état/modèle -->
+  <rect x="120" y="420" width="90" height="26" rx="13" fill="#C9A84C"/>
+  <text x="165" y="437" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="#1C1C1E">NEUF</text>
+
+  <!-- Texte modèle -->
+  <text x="200" y="455" text-anchor="middle" font-family="'SF Pro Display',-apple-system,sans-serif" font-size="13" font-weight="700" fill="#C9A84C">iPhone 15</text>
+  <text x="200" y="472" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="rgba(0,0,0,0.45)">128 Go · Rose</text>
+</svg>

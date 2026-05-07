@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 600" width="520" height="600">
+  <defs>
+    <radialGradient id="heroBg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#1a2a4a"/>
+      <stop offset="100%" stop-color="#0a0f1e"/>
+    </radialGradient>
+    <linearGradient id="heroBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2C2C2E"/>
+      <stop offset="100%" stop-color="#1C1C1E"/>
+    </linearGradient>
+    <linearGradient id="heroGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="50%" stop-color="#C9A84C"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0071E3" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0071E3" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="heroShadow">
+      <feDropShadow dx="0" dy="20" stdDeviation="25" flood-color="rgba(201,168,76,0.4)"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Fond -->
+  <rect width="520" height="600" fill="url(#heroBg)"/>
+
+  <!-- Halos lumineux -->
+  <circle cx="260" cy="280" r="200" fill="url(#glow1)"/>
+  <circle cx="180" cy="350" r="150" fill="url(#glow2)"/>
+
+  <!-- Étoiles décoratives -->
+  <circle cx="50"  cy="80"  r="1.5" fill="#C9A84C" opacity="0.8"/>
+  <circle cx="120" cy="40"  r="1"   fill="#fff"    opacity="0.6"/>
+  <circle cx="420" cy="60"  r="2"   fill="#C9A84C" opacity="0.7"/>
+  <circle cx="480" cy="140" r="1.5" fill="#fff"    opacity="0.5"/>
+  <circle cx="30"  cy="300" r="1"   fill="#C9A84C" opacity="0.6"/>
+  <circle cx="490" cy="380" r="1.5" fill="#fff"    opacity="0.6"/>
+  <circle cx="70"  cy="480" r="1"   fill="#C9A84C" opacity="0.5"/>
+  <circle cx="450" cy="500" r="2"   fill="#fff"    opacity="0.4"/>
+
+  <!-- Lignes décoratives dorées -->
+  <line x1="0" y1="200" x2="120" y2="200" stroke="url(#heroGold)" stroke-width="0.5" opacity="0.4"/>
+  <line x1="400" y1="380" x2="520" y2="380" stroke="url(#heroGold)" stroke-width="0.5" opacity="0.4"/>
+
+  <!-- Corps iPhone 17 Pro Max (héros) -->
+  <g filter="url(#heroShadow)">
+    <rect x="150" y="80" width="220" height="440" rx="44" fill="url(#heroBody)"/>
+    <rect x="150" y="80" width="220" height="440" rx="44" fill="none" stroke="url(#heroGold)" stroke-width="2"/>
+  </g>
+
+  <!-- Écran -->
+  <rect x="152" y="108" width="216" height="384" rx="14" fill="#050810"/>
+
+  <!-- Interface écran -->
+  <text x="260" y="170" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="44" font-weight="200" fill="white" letter-spacing="-2">09:41</text>
+  <text x="260" y="198" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="13" fill="rgba(255,255,255,0.65)">Lundi 9 Septembre</text>
+
+  <!-- Apps grid -->
+  <rect x="172" y="222" width="40" height="40" rx="10" fill="#0071E3"/>
+  <rect x="220" y="222" width="40" height="40" rx="10" fill="#34C759"/>
+  <rect x="268" y="222" width="40" height="40" rx="10" fill="#C9A84C"/>
+  <rect x="316" y="222" width="40" height="40" rx="10" fill="#FF9500"/>
+  <rect x="172" y="270" width="40" height="40" rx="10" fill="#FF3B30"/>
+  <rect x="220" y="270" width="40" height="40" rx="10" fill="#5856D6"/>
+  <rect x="268" y="270" width="40" height="40" rx="10" fill="#00C7BE"/>
+  <rect x="316" y="270" width="40" height="40" rx="10" fill="#FF2D55"/>
+
+  <!-- Dock -->
+  <rect x="162" y="326" width="196" height="64" rx="18" fill="rgba(255,255,255,0.10)"/>
+  <rect x="176" y="340" width="38" height="38" rx="10" fill="#0071E3"/>
+  <rect x="221" y="340" width="38" height="38" rx="10" fill="#25D366"/>
+  <rect x="266" y="340" width="38" height="38" rx="10" fill="#FF9500"/>
+  <rect x="311" y="340" width="38" height="38" rx="10" fill="#8E8E93"/>
+
+  <!-- Home bar -->
+  <rect x="210" y="454" width="100" height="5" rx="2.5" fill="rgba(255,255,255,0.45)"/>
+
+  <!-- Reflet écran -->
+  <rect x="152" y="108" width="216" height="384" rx="14" fill="rgba(255,255,255,0.04)"/>
+
+  <!-- Dynamic Island -->
+  <rect x="208" y="110" width="104" height="28" rx="14" fill="#050810"/>
+  <circle cx="296" cy="124" r="5" fill="#151520"/>
+
+  <!-- Caméra Pro (dos) -->
+  <rect x="163" y="93" width="66" height="60" rx="14" fill="#252525" stroke="#C9A84C" stroke-width="1"/>
+  <circle cx="183" cy="110" r="10" fill="#0a0a12" stroke="#C9A84C" stroke-width="0.8"/>
+  <circle cx="204" cy="128" r="10" fill="#0a0a12" stroke="#C9A84C" stroke-width="0.8"/>
+  <circle cx="183" cy="128" r="6"  fill="#0a0a12" stroke="#C9A84C" stroke-width="0.5" opacity="0.7"/>
+  <circle cx="183" cy="110" r="4"  fill="#0d1530"/>
+  <circle cx="183" cy="110" r="2"  fill="#1a2a50" opacity="0.9"/>
+  <circle cx="204" cy="128" r="4"  fill="#0d1530"/>
+  <circle cx="204" cy="128" r="2"  fill="#1a2a50" opacity="0.9"/>
+
+  <!-- Boutons -->
+  <rect x="146" y="185" width="6" height="42" rx="3" fill="url(#heroGold)" opacity="0.8"/>
+  <rect x="146" y="240" width="6" height="30" rx="3" fill="url(#heroGold)" opacity="0.7"/>
+  <rect x="146" y="280" width="6" height="30" rx="3" fill="url(#heroGold)" opacity="0.7"/>
+  <rect x="368" y="200" width="6" height="56" rx="3" fill="url(#heroGold)" opacity="0.7"/>
+
+  <!-- Shine corps -->
+  <rect x="150" y="80" width="70" height="440" rx="44" fill="rgba(255,255,255,0.04)"/>
+
+  <!-- Badge "iPhone 17 Pro Max" -->
+  <rect x="170" y="540" width="180" height="32" rx="16" fill="url(#heroGold)"/>
+  <text x="260" y="561" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="13" font-weight="700" fill="#1C1C1E">iPhone 17 Pro Max</text>
+
+  <!-- Sous-titre -->
+  <text x="260" y="585" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="rgba(201,168,76,0.7)">Titane Naturel · 512 Go</text>
+</svg>

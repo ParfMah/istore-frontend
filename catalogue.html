@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="assets/js/page-loader.js"></script>
+<title>Catalogue — iStore Pro</title>
+  <link rel="stylesheet" href="assets/css/global.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <link rel="stylesheet" href="assets/css/pages/catalogue.css"/>
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="header__logo"><img src="assets/images/logo-header.svg" alt="iStore Pro" style="height:38px;width:auto;display:block;" /></a>
+    <nav class="header__nav" id="mainNav">
+      <a href="index.html"      class="nav-link">Accueil</a>
+      <a href="catalogue.html"  class="nav-link active">Catalogue</a>
+      <a href="simulation.html" class="nav-link">Simuler un crédit</a>
+      <a href="a-propos.html"   class="nav-link">À propos</a>
+      <a href="contact.html"    class="nav-link">Contact</a>
+    </nav>
+    <div class="header__actions"><a href="connexion.html" class="btn btn--outline" id="authBtn">Connexion</a></div>
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+  </div>
+</header>
+
+<div class="page-hero"><div class="container"><h1>Catalogue iPhone</h1><p>Tous nos modèles neuf et reconditionné — iPhone 13 à 17</p></div></div>
+
+<main class="catalogue-layout container">
+  <aside class="filters" id="filtersPanel">
+    <h3 class="filters__title">Filtrer</h3>
+    <div class="filter-group">
+      <label class="filter-group__label">Modèle</label>
+      <div class="filter-checkboxes" id="filterModel">
+        <label><input type="checkbox" value="iPhone 13"> iPhone 13</label>
+        <label><input type="checkbox" value="iPhone 14"> iPhone 14</label>
+        <label><input type="checkbox" value="iPhone 15"> iPhone 15</label>
+        <label><input type="checkbox" value="iPhone 16"> iPhone 16</label>
+        <label><input type="checkbox" value="iPhone 17"> iPhone 17</label>
+      </div>
+    </div>
+    <div class="filter-group">
+      <label class="filter-group__label">Variante</label>
+      <div class="filter-checkboxes" id="filterVariant">
+        <label><input type="checkbox" value="standard"> Standard</label>
+        <label><input type="checkbox" value="pro"> Pro</label>
+        <label><input type="checkbox" value="pro-max"> Pro Max</label>
+      </div>
+    </div>
+    <div class="filter-group">
+      <label class="filter-group__label">État</label>
+      <div class="filter-checkboxes" id="filterCondition">
+        <label><input type="checkbox" value="neuf"> Neuf</label>
+        <label><input type="checkbox" value="grade-a"> Occasion Grade A</label>
+        <label><input type="checkbox" value="grade-b"> Occasion Grade B</label>
+        <label><input type="checkbox" value="grade-c"> Occasion Grade C</label>
+      </div>
+    </div>
+    <div class="filter-group">
+      <label class="filter-group__label">Prix max : <span id="priceVal">2 000 €</span></label>
+      <input type="range" id="priceRange" min="100" max="2000" value="2000" step="50"/>
+    </div>
+    <button class="btn btn--primary btn--full" id="applyFilters">Appliquer</button>
+    <button class="btn btn--ghost btn--full" id="resetFilters" style="margin-top:.5rem">Réinitialiser</button>
+  </aside>
+
+  <section class="catalogue-main">
+    <div class="catalogue-toolbar">
+      <p id="resultCount" class="result-count">Chargement…</p>
+      <div class="toolbar-right">
+        <select id="sortSelect" class="select-input">
+          <option value="price-asc">Prix croissant</option>
+          <option value="price-desc">Prix décroissant</option>
+          <option value="newest">Plus récents</option>
+        </select>
+        <button class="btn btn--ghost btn--icon" id="toggleFilters">Filtres ☰</button>
+      </div>
+    </div>
+    <div class="products-grid" id="productGrid">
+      <div class="skeleton-card"></div><div class="skeleton-card"></div>
+      <div class="skeleton-card"></div><div class="skeleton-card"></div>
+      <div class="skeleton-card"></div><div class="skeleton-card"></div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </section>
+</main>
+
+<footer class="footer"><div class="footer__bottom"><p>© 2025 iStore Pro. Tous droits réservés.</p></div></footer>
+
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/products.data.js"></script>
+<script src="assets/js/catalogue.js"></script>
+</body>
+</html>

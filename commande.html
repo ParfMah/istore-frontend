@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="assets/js/page-loader.js"></script>
+<title>Commander — iStore Pro</title>
+  <link rel="stylesheet" href="assets/css/global.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <style>
+    .commande-layout{display:grid;grid-template-columns:1fr 420px;gap:var(--space-10);padding-top:var(--space-10);padding-bottom:var(--space-16);align-items:start;}
+    .commande-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:var(--space-8);box-shadow:var(--shadow-card);}
+    .commande-card h2{font-size:var(--text-xl);font-weight:800;color:var(--apple-dark);margin-bottom:var(--space-6);padding-bottom:var(--space-4);border-bottom:2px solid var(--gold-light);display:flex;align-items:center;gap:var(--space-3);}
+    .commande-card h2 span{font-size:1.4rem;}
+
+    /* Choix type paiement */
+    .payment-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-6);}
+    .payment-type-card{
+      border:2px solid var(--border);border-radius:var(--radius-md);padding:var(--space-5);
+      cursor:pointer;transition:all var(--transition);text-align:center;background:var(--bg);
+    }
+    .payment-type-card:hover{border-color:var(--gold);background:var(--gold-light);}
+    .payment-type-card.selected{border-color:var(--gold);background:var(--gold-light);box-shadow:var(--shadow-gold);}
+    .payment-type-card .icon{font-size:2.2rem;display:block;margin-bottom:var(--space-3);}
+    .payment-type-card h3{font-size:var(--text-md);font-weight:700;color:var(--apple-dark);margin-bottom:var(--space-2);}
+    .payment-type-card p{font-size:var(--text-xs);color:var(--text-muted);}
+    .payment-type-card.selected h3{color:var(--gold-dark);}
+
+    /* Section credit */
+    .credit-info-box{
+      background:linear-gradient(135deg,var(--apple-dark),#0a1628);
+      border-radius:var(--radius-md);padding:var(--space-5);margin-bottom:var(--space-6);
+      border:1px solid rgba(201,168,76,.3);
+    }
+    .credit-info-box h4{color:var(--gold-bright);font-size:var(--text-sm);font-weight:700;margin-bottom:var(--space-4);}
+    .credit-calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);}
+    .credit-calc-item span{font-size:var(--text-xs);color:rgba(255,255,255,.6);display:block;margin-bottom:2px;}
+    .credit-calc-item strong{font-size:var(--text-sm);color:#fff;font-weight:700;}
+    .credit-calc-item.highlight strong{color:var(--gold-bright);font-size:var(--text-md);}
+
+    /* Récap commande (droite) */
+    .order-summary{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:var(--space-6);box-shadow:var(--shadow-card);position:sticky;top:calc(var(--header-h) + var(--space-4));}
+    .order-summary h3{font-size:var(--text-lg);font-weight:800;color:var(--apple-dark);margin-bottom:var(--space-5);padding-bottom:var(--space-3);border-bottom:1px solid var(--border-light);}
+    .order-product{display:flex;gap:var(--space-4);margin-bottom:var(--space-5);}
+    .order-product img{width:80px;height:80px;object-fit:cover;border-radius:var(--radius);background:var(--bg-alt);}
+    .order-product__info h4{font-size:var(--text-sm);font-weight:700;margin-bottom:var(--space-1);}
+    .order-product__info p{font-size:var(--text-xs);color:var(--text-muted);}
+    .order-total-row{display:flex;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--border-light);font-size:var(--text-sm);}
+    .order-total-row:last-child{border-bottom:none;}
+    .order-total-row.main{font-weight:800;font-size:var(--text-md);}
+    .order-total-row.main span:last-child{color:var(--primary);}
+    .order-total-row.gold span:last-child{color:var(--gold-dark);font-weight:700;}
+
+    /* Steps */
+    .steps{display:flex;gap:0;margin-bottom:var(--space-6);}
+    .step{flex:1;text-align:center;padding:var(--space-3);font-size:var(--text-xs);font-weight:600;color:var(--text-muted);border-bottom:2px solid var(--border-light);transition:all var(--transition);}
+    .step.active{color:var(--gold-dark);border-bottom-color:var(--gold);}
+    .step.done{color:var(--success);border-bottom-color:var(--success);}
+
+    /* Section confirmation */
+    .confirm-box{text-align:center;padding:var(--space-12) var(--space-6);}
+    .confirm-box .icon{font-size:4rem;display:block;margin-bottom:var(--space-4);}
+    .confirm-box h2{font-size:var(--text-2xl);font-weight:800;margin-bottom:var(--space-4);color:var(--apple-dark);}
+    .confirm-box p{color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-3);}
+    .confirm-num{font-family:monospace;font-size:var(--text-lg);font-weight:800;color:var(--primary);background:var(--primary-light);padding:var(--space-2) var(--space-4);border-radius:var(--radius);display:inline-block;margin:var(--space-4) 0;}
+
+    /* Instructions */
+    .instructions-box{background:var(--bg-alt);border-radius:var(--radius-md);padding:var(--space-5);margin:var(--space-5) 0;border-left:4px solid var(--gold);}
+    .instructions-box h4{font-size:var(--text-sm);font-weight:700;color:var(--gold-dark);margin-bottom:var(--space-3);}
+    .instructions-box ol{padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-2);}
+    .instructions-box li{font-size:var(--text-sm);color:var(--text-secondary);}
+
+    @media(max-width:900px){.commande-layout{grid-template-columns:1fr;}.payment-type-grid{grid-template-columns:1fr 1fr;}.order-summary{position:static;}}
+    @media(max-width:480px){.payment-type-grid{grid-template-columns:1fr;}.credit-calc-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="header__logo"><img src="assets/images/logo-header.svg" alt="iStore Pro" style="height:38px;width:auto;display:block;" /></a>
+    <nav class="header__nav" id="mainNav">
+      <a href="index.html"      class="nav-link">Accueil</a>
+      <a href="catalogue.html"  class="nav-link">Catalogue</a>
+      <a href="simulation.html" class="nav-link">Simuler un crédit</a>
+      <a href="a-propos.html"   class="nav-link">À propos</a>
+      <a href="contact.html"    class="nav-link">Contact</a>
+    </nav>
+    <div class="header__actions">
+      <a href="connexion.html" class="btn btn--outline-white" id="authBtn">Connexion</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="container">
+    <h1>Finaliser ma commande</h1>
+    <p>Choisissez votre mode de paiement et renseignez votre adresse de livraison.</p>
+  </div>
+</div>
+
+<main class="container commande-layout">
+
+  <!-- ── FORMULAIRE GAUCHE ── -->
+  <div>
+
+    <!-- Étapes -->
+    <div class="steps" id="stepsBar">
+      <div class="step active" id="step1">1. Mode de paiement</div>
+      <div class="step" id="step2">2. Adresse de livraison</div>
+      <div class="step" id="step3">3. Confirmation</div>
+    </div>
+
+    <!-- SECTION 1 : Mode de paiement -->
+    <div id="sectionPaiement" class="commande-card">
+      <h2><span>💳</span> Mode de paiement</h2>
+
+      <div class="payment-type-grid">
+        <div class="payment-type-card selected" id="cardComptant" onclick="selectType('comptant')">
+          <span class="icon">💰</span>
+          <h3>Paiement comptant</h3>
+          <p>Payer en une seule fois. Livraison après confirmation du paiement.</p>
+        </div>
+        <div class="payment-type-card" id="cardCredit" onclick="selectType('credit')">
+          <span class="icon">📋</span>
+          <h3>Paiement à crédit</h3>
+          <p>Payer en plusieurs fois. Apport minimum 40%. Taux dès 1.5%.</p>
+        </div>
+      </div>
+
+      <!-- Comptant : méthode -->
+      <div id="comptantSection">
+        <div class="form-group">
+          <label>Méthode de paiement</label>
+          <select id="methodePaiement" class="select-input">
+            <option value="mobile_money">📱 Mobile Money</option>
+            <option value="virement">🏦 Virement bancaire</option>
+            <option value="especes">💵 Espèces (en boutique)</option>
+            <option value="autre">🔄 Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Référence de transaction (optionnel)</label>
+          <input type="text" id="refExterneComptant" class="form-input" placeholder="Ex : TXN12345678 (si déjà effectué)"/>
+        </div>
+      </div>
+
+      <!-- Crédit : paramètres -->
+      <div id="creditSection" style="display:none">
+        <div class="credit-info-box" id="creditInfoBox">
+          <h4>⚡ Simulation de votre crédit</h4>
+          <div class="credit-calc-grid" id="creditCalcGrid">
+            <div class="credit-calc-item"><span>Prix total</span><strong id="cPrix">—</strong></div>
+            <div class="credit-calc-item"><span>Taux d'intérêt</span><strong id="cTaux">—</strong></div>
+            <div class="credit-calc-item"><span>Apport versé</span><strong id="cApport">—</strong></div>
+            <div class="credit-calc-item"><span>Montant financé</span><strong id="cFinance">—</strong></div>
+            <div class="credit-calc-item"><span>Durée</span><strong id="cDuree">—</strong></div>
+            <div class="credit-calc-item highlight"><span>Mensualité</span><strong id="cMensualite">—</strong></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Apport initial (€) — minimum 40% du prix <span class="badge badge--neutral" id="apportPct">--</span></label>
+          <input type="number" id="creditApport" class="form-input" placeholder="Ex : 400" min="0" oninput="updateCreditCalc()"/>
+          <p class="input-hint" id="apportWarn" style="display:none;color:var(--error);"></p>
+        </div>
+        <div class="form-group">
+          <label>Durée de remboursement</label>
+          <select id="creditDuree" class="select-input" onchange="updateCreditCalc()">
+            <option value="3">3 mois</option>
+            <option value="6" selected>6 mois</option>
+            <option value="9">9 mois</option>
+            <option value="12">12 mois</option>
+            <option value="18">18 mois</option>
+            <option value="24">24 mois</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn--gold btn--full btn--lg" onclick="goToStep2()">
+        Continuer → Adresse de livraison
+      </button>
+    </div>
+
+    <!-- SECTION 2 : Adresse de livraison -->
+    <div id="sectionAdresse" class="commande-card" style="display:none">
+      <h2><span>📦</span> Adresse de livraison</h2>
+
+      <div id="adresseAlert" class="alert" style="display:none"></div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nom complet *</label>
+          <input type="text" id="livFullname" class="form-input" placeholder="Jean Dupont"/>
+        </div>
+        <div class="form-group">
+          <label>Téléphone *</label>
+          <input type="tel" id="livPhone" class="form-input" placeholder="+33 6 00 00 00 00"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Adresse complète *</label>
+        <input type="text" id="livAddress" class="form-input" placeholder="12 rue de la Paix, Appt 3"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ville *</label>
+          <input type="text" id="livCity" class="form-input" placeholder="Paris"/>
+        </div>
+        <div class="form-group">
+          <label>Code postal</label>
+          <input type="text" id="livPostal" class="form-input" placeholder="75001"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Pays *</label>
+        <select id="livCountry" class="select-input">
+          <option value="France" selected>France</option>
+          <option value="Belgique">Belgique</option>
+          <option value="Suisse">Suisse</option>
+          <option value="Luxembourg">Luxembourg</option>
+          <option value="Canada">Canada</option>
+          <option value="Maroc">Maroc</option>
+          <option value="Sénégal">Sénégal</option>
+          <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+          <option value="Cameroun">Cameroun</option>
+          <option value="Tunisie">Tunisie</option>
+          <option value="Algérie">Algérie</option>
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Instructions de livraison (optionnel)</label>
+        <textarea id="livNotes" class="form-input" rows="2" placeholder="Ex : Sonner chez le gardien, laisser au bureau de poste si absent..."></textarea>
+      </div>
+
+      <div style="display:flex;gap:var(--space-4);">
+        <button class="btn btn--ghost btn--lg" onclick="goToStep1()">← Retour</button>
+        <button class="btn btn--gold btn--lg" style="flex:1" onclick="submitOrder()" id="submitBtn">
+          ✓ Confirmer ma commande
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 3 : Confirmation -->
+    <div id="sectionConfirmation" class="commande-card" style="display:none">
+      <div class="confirm-box">
+        <span class="icon" id="confirmIcon">✅</span>
+        <h2 id="confirmTitle">Commande confirmée !</h2>
+        <p id="confirmMsg">Votre commande a été enregistrée avec succès.</p>
+        <div class="confirm-num" id="confirmNum">—</div>
+        <div class="instructions-box" id="confirmInstructions" style="display:none">
+          <h4 id="instrTitre"></h4>
+          <ol id="instrEtapes"></ol>
+        </div>
+        <div style="display:flex;gap:var(--space-4);justify-content:center;margin-top:var(--space-6);flex-wrap:wrap;">
+          <a href="espace-client.html" class="btn btn--primary btn--lg">Mon espace client</a>
+          <a href="catalogue.html"     class="btn btn--ghost btn--lg">Continuer mes achats</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── RÉCAPITULATIF DROITE ── -->
+  <div class="order-summary" id="orderSummary">
+    <h3>🛍️ Récapitulatif</h3>
+    <div class="order-product" id="summaryProduct">
+      <div class="loading-spinner" style="padding:1rem"></div>
+    </div>
+    <div id="summaryTotals"></div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div class="footer__bottom"><p>© 2025 iStore Pro. Tous droits réservés.</p></div>
+</footer>
+
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/products.data.js"></script>
+<script>
+
+// ── Vérification connexion ────────────────────────────────────
+if (!Auth.isLoggedIn()) {
+  window.location.href = `connexion.html?redirect=commande.html${window.location.search}`;
+}
+
+const RATES = { neuf:0.03, 'grade-a':0.015, 'grade-b':0.02, 'grade-c':0.025 };
+let currentProduct = null;
+let selectedType   = 'comptant';
+
+// ── Chargement produit ────────────────────────────────────────
+async function loadProduct() {
+  const id = getParam('id');
+  if (!id) { window.location.href = 'catalogue.html'; return; }
+
+  let p = null;
+  try { p = await API.get(`/products/${id}`); } catch(e) {}
+  if (!p && typeof PRODUCTS_DATA !== 'undefined')
+    p = PRODUCTS_DATA.find(x => (x._id || x.id) === id);
+
+  if (!p) { window.location.href = 'catalogue.html'; return; }
+  currentProduct = p;
+  document.title = `Commander ${p.name} — iStore Pro`;
+  renderSummary();
+}
+
+function renderSummary() {
+  const p = currentProduct;
+  const img = (p.images && p.images[0]) ? p.images[0] : 'assets/images/placeholder-phone.svg';
+  const cond = p.conditionGrade ? `Grade ${p.conditionGrade}` : (p.condition === 'neuf' ? 'Neuf' : 'Occasion');
+
+  document.getElementById('summaryProduct').innerHTML = `
+    <img src="${img}" alt="${p.name}" onerror="this.src='assets/images/placeholder-phone.svg'"/>
+    <div class="order-product__info">
+      <h4>${p.name}</h4>
+      <p>${p.storage || ''} · ${p.color || ''}</p>
+      <p>${cond}</p>
+    </div>`;
+
+  updateSummaryTotals();
+}
+
+function updateSummaryTotals() {
+  const p = currentProduct;
+  if (!p) return;
+  const apport   = parseFloat(document.getElementById('creditApport')?.value) || 0;
+  const duration = parseInt(document.getElementById('creditDuree')?.value)   || 6;
+  const condKey  = p.conditionGrade ? `grade-${p.conditionGrade.toLowerCase()}` : (p.condition||'neuf');
+  const rate     = RATES[condKey] || 0.03;
+  const finance  = p.priceReduced - apport;
+  const interets = finance > 0 ? finance * rate : 0;
+  const mensualite = finance > 0 ? (finance + interets) / duration : 0;
+
+  let html = `
+    <div class="order-total-row"><span>Prix produit</span><span>${formatPrice(p.priceReduced)}</span></div>
+    <div class="order-total-row"><span>Prix barré</span><span style="text-decoration:line-through;color:var(--text-muted)">${formatPrice(p.priceOriginal)}</span></div>`;
+
+  if (selectedType === 'credit' && apport > 0) {
+    html += `
+      <div class="order-total-row"><span>Apport</span><span style="color:var(--success)">−${formatPrice(apport)}</span></div>
+      <div class="order-total-row"><span>Intérêts (${(rate*100).toFixed(1)}%)</span><span style="color:var(--warning)">+${formatPrice(interets)}</span></div>
+      <div class="order-total-row gold"><span>Mensualité ×${duration}</span><span>${formatPrice(mensualite)}</span></div>
+      <div class="order-total-row main"><span>Total crédit</span><span>${formatPrice(finance + interets)}</span></div>`;
+  } else {
+    html += `<div class="order-total-row main"><span>Total à payer</span><span>${formatPrice(p.priceReduced)}</span></div>`;
+  }
+
+  html += `<div class="order-total-row" style="color:var(--success);font-weight:600"><span>🚚 Livraison</span><span>Gratuite</span></div>`;
+  document.getElementById('summaryTotals').innerHTML = html;
+}
+
+// ── Sélection type paiement ───────────────────────────────────
+function selectType(type) {
+  selectedType = type;
+  document.getElementById('cardComptant').classList.toggle('selected', type === 'comptant');
+  document.getElementById('cardCredit').classList.toggle('selected',   type === 'credit');
+  document.getElementById('comptantSection').style.display = type === 'comptant' ? 'block' : 'none';
+  document.getElementById('creditSection').style.display   = type === 'credit'   ? 'block' : 'none';
+  updateSummaryTotals();
+}
+
+// ── Calcul crédit en temps réel ───────────────────────────────
+function updateCreditCalc() {
+  if (!currentProduct) return;
+  const p      = currentProduct;
+  const apport = parseFloat(document.getElementById('creditApport').value) || 0;
+  const dur    = parseInt(document.getElementById('creditDuree').value)    || 6;
+  const condKey= p.conditionGrade ? `grade-${p.conditionGrade.toLowerCase()}` : (p.condition||'neuf');
+  const rate   = RATES[condKey] || 0.03;
+  const minApp = p.priceReduced * 0.40;
+  const pct    = p.priceReduced > 0 ? Math.round((apport/p.priceReduced)*100) : 0;
+
+  document.getElementById('apportPct').textContent = apport > 0 ? `${pct}%` : '--';
+  document.getElementById('apportPct').className   = 'badge ' + (pct >= 40 ? 'badge--success' : 'badge--error');
+
+  const warn = document.getElementById('apportWarn');
+  if (apport > 0 && apport < minApp) {
+    warn.style.display = 'block';
+    warn.textContent   = `⚠ Apport minimum : ${formatPrice(minApp)} (40%)`;
+  } else { warn.style.display = 'none'; }
+
+  if (apport > 0 && apport < p.priceReduced) {
+    const finance   = p.priceReduced - apport;
+    const interets  = finance * rate;
+    const total     = finance + interets;
+    const mensualite= total / dur;
+    document.getElementById('cPrix').textContent     = formatPrice(p.priceReduced);
+    document.getElementById('cTaux').textContent     = `${(rate*100).toFixed(1)}%`;
+    document.getElementById('cApport').textContent   = formatPrice(apport);
+    document.getElementById('cFinance').textContent  = formatPrice(finance);
+    document.getElementById('cDuree').textContent    = `${dur} mois`;
+    document.getElementById('cMensualite').textContent = formatPrice(mensualite);
+  }
+  updateSummaryTotals();
+}
+
+// ── Navigation entre étapes ───────────────────────────────────
+function goToStep1() {
+  document.getElementById('sectionPaiement').style.display = 'block';
+  document.getElementById('sectionAdresse').style.display  = 'none';
+  document.getElementById('step1').className = 'step active';
+  document.getElementById('step2').className = 'step';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToStep2() {
+  // Validations étape 1
+  if (selectedType === 'credit') {
+    const apport  = parseFloat(document.getElementById('creditApport').value) || 0;
+    const minApp  = currentProduct.priceReduced * 0.40;
+    if (apport < minApp) {
+      showToast(`Apport minimum requis : ${formatPrice(minApp)}`, 'error'); return;
+    }
+    if (apport >= currentProduct.priceReduced) {
+      showToast('L\'apport dépasse le prix du produit.', 'error'); return;
+    }
+  }
+  document.getElementById('sectionPaiement').style.display = 'none';
+  document.getElementById('sectionAdresse').style.display  = 'block';
+  document.getElementById('step1').className = 'step done';
+  document.getElementById('step2').className = 'step active';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Soumettre la commande ─────────────────────────────────────
+async function submitOrder() {
+  const btn  = document.getElementById('submitBtn');
+  const alert= document.getElementById('adresseAlert');
+
+  const adresse = {
+    fullname  : document.getElementById('livFullname').value.trim(),
+    phone     : document.getElementById('livPhone').value.trim(),
+    address   : document.getElementById('livAddress').value.trim(),
+    city      : document.getElementById('livCity').value.trim(),
+    postalCode: document.getElementById('livPostal').value.trim(),
+    country   : document.getElementById('livCountry').value,
+    notes     : document.getElementById('livNotes').value.trim()
+  };
+
+  if (!adresse.fullname || !adresse.phone || !adresse.address || !adresse.city) {
+    showAlert(alert, 'error', 'Veuillez remplir tous les champs obligatoires (*)'); return;
+  }
+
+  const payload = {
+    productId       : currentProduct._id || currentProduct.id,
+    typePaiement    : selectedType,
+    adresseLivraison: adresse
+  };
+
+  if (selectedType === 'comptant') {
+    payload.methodePaiement  = document.getElementById('methodePaiement').value;
+    payload.referenceExterne = document.getElementById('refExterneComptant').value.trim();
+  } else {
+    payload.apport    = parseFloat(document.getElementById('creditApport').value);
+    payload.dureesMois= parseInt(document.getElementById('creditDuree').value);
+  }
+
+  btn.disabled = true; btn.textContent = 'Traitement en cours…';
+
+  try {
+    const res = await API.post('/orders', payload, true);
+
+    // Afficher confirmation
+    document.getElementById('sectionAdresse').style.display     = 'none';
+    document.getElementById('sectionConfirmation').style.display = 'block';
+    document.getElementById('step2').className = 'step done';
+    document.getElementById('step3').className = 'step active';
+
+    document.getElementById('confirmNum').textContent  = res.order.numeroCommande;
+    document.getElementById('confirmIcon').textContent = selectedType === 'comptant' ? '✅' : '📋';
+    document.getElementById('confirmTitle').textContent= selectedType === 'comptant'
+      ? 'Commande enregistrée !' : 'Dossier de crédit ouvert !';
+    document.getElementById('confirmMsg').textContent  = selectedType === 'comptant'
+      ? `Votre commande a été enregistrée. Effectuez votre paiement selon les instructions ci-dessous. Votre appareil sera expédié après confirmation.`
+      : `Votre dossier de crédit est ouvert. Connectez-vous à votre espace client pour déclarer vos paiements. Livraison après validation du premier versement.`;
+
+    if (res.instructions) {
+      document.getElementById('instrTitre').textContent  = res.instructions.titre;
+      const ol = document.getElementById('instrEtapes');
+      ol.innerHTML = res.instructions.etapes.map(e=>`<li>${e}</li>`).join('');
+      document.getElementById('confirmInstructions').style.display = 'block';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(e) {
+    showAlert(alert, 'error', e.message || 'Erreur lors de la commande. Réessayez.');
+    btn.disabled = false; btn.textContent = '✓ Confirmer ma commande';
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadProduct();
+  if (currentProduct) {
+    document.getElementById('creditApport').addEventListener('input', updateCreditCalc);
+    document.getElementById('creditDuree').addEventListener('change', updateCreditCalc);
+  }
+});
+</script>
+
+</body>
+</html>

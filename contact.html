@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="assets/js/page-loader.js"></script>
+<title>Contact — iStore Pro</title>
+  <link rel="stylesheet" href="assets/css/global.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="header__logo"><img src="assets/images/logo-header.svg" alt="iStore Pro" style="height:38px;width:auto;display:block;" /></a>
+    <nav class="header__nav" id="mainNav">
+      <a href="index.html"      class="nav-link">Accueil</a>
+      <a href="catalogue.html"  class="nav-link">Catalogue</a>
+      <a href="simulation.html" class="nav-link">Simuler un crédit</a>
+      <a href="a-propos.html"   class="nav-link">À propos</a>
+      <a href="contact.html"    class="nav-link active">Contact</a>
+    </nav>
+    <div class="header__actions"><a href="connexion.html" class="btn btn--outline" id="authBtn">Connexion</a></div>
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+  </div>
+</header>
+<div class="page-hero"><div class="container"><h1>Nous contacter</h1><p>Une question ? On vous répond sous 24h.</p></div></div>
+<main class="container contact-layout">
+  <div class="contact-info">
+    <h2>Coordonnées</h2>
+    <div class="contact-info__item"><span>📧</span><div><strong>Email</strong><p>contact@istorepro.com</p></div></div>
+    <div class="contact-info__item"><span>📞</span><div><strong>Téléphone</strong><p>+33 1 23 45 67 89</p><p><small>Lun–Sam, 9h–18h</small></p></div></div>
+    <div class="contact-info__item"><span>📍</span><div><strong>Adresse</strong><p>12 rue de la Paix<br>75001 Paris, France</p></div></div>
+  </div>
+  <div class="contact-form-card">
+    <h2>Envoyer un message</h2>
+    <div id="contactAlert" class="alert" style="display:none"></div>
+    <div class="form-group"><label for="contactName">Nom complet *</label><input type="text" id="contactName" class="form-input" placeholder="Jean Dupont"/></div>
+    <div class="form-group"><label for="contactEmail">Email *</label><input type="email" id="contactEmail" class="form-input" placeholder="jean@exemple.com"/></div>
+    <div class="form-group">
+      <label for="contactSubject">Sujet</label>
+      <select id="contactSubject" class="select-input">
+        <option>Question sur un produit</option>
+        <option>Suivi de commande</option>
+        <option>Dossier de crédit</option>
+        <option>Réclamation</option>
+        <option>Autre</option>
+      </select>
+    </div>
+    <div class="form-group"><label for="contactMessage">Message *</label><textarea id="contactMessage" class="form-input" rows="5" placeholder="Votre message…"></textarea></div>
+    <button class="btn btn--primary btn--full" id="sendContactBtn">Envoyer le message</button>
+  </div>
+</main>
+<footer class="footer"><div class="footer__bottom"><p>© 2025 iStore Pro. Tous droits réservés.</p></div></footer>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/api.js"></script>
+<script>
+document.getElementById('sendContactBtn').addEventListener('click', async () => {
+  const name    = document.getElementById('contactName').value.trim();
+  const email   = document.getElementById('contactEmail').value.trim();
+  const subject = document.getElementById('contactSubject').value;
+  const message = document.getElementById('contactMessage').value.trim();
+  const alertEl = document.getElementById('contactAlert');
+  if (!name || !email || !message) { showAlert(alertEl,'error','Veuillez remplir tous les champs obligatoires.'); return; }
+  try {
+    await API.post('/contact', { name, email, subject, message });
+    showAlert(alertEl,'success','Message envoyé ! Nous vous répondrons sous 24h.');
+    document.getElementById('contactName').value = '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactMessage').value = '';
+  } catch(e) { showAlert(alertEl,'error','Erreur lors de l\'envoi.'); }
+});
+</script>
+</body>
+</html>

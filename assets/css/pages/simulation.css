@@ -1,0 +1,51 @@
+/* simulation.css — iStore Pro */
+.simulation-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:var(--space-10);padding-top:var(--space-12);padding-bottom:var(--space-16);align-items:start;
+}
+.sim-form-card,.sim-result-card{
+  background:var(--bg-card);border:1px solid var(--border-light);
+  border-radius:var(--radius-lg);padding:var(--space-8);
+  box-shadow:var(--shadow-card);
+}
+.sim-form-card{border-top:4px solid var(--primary);}
+.sim-result-card{border-top:4px solid var(--gold);}
+.sim-form-card h2,.sim-result-card h2{font-size:var(--text-xl);font-weight:800;margin-bottom:var(--space-6);color:var(--apple-dark);}
+
+#apportPct{margin-left:var(--space-2);}
+
+.sim-result__disclaimer{
+  background:var(--gold-light);color:var(--gold-dark);
+  border:1px solid rgba(201,168,76,.3);border-radius:var(--radius);
+  padding:var(--space-3) var(--space-4);font-size:var(--text-sm);
+  margin-bottom:var(--space-6);font-weight:500;
+}
+
+.sim-result__grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);}
+.sim-result__item{
+  background:var(--bg-alt);border-radius:var(--radius-md);
+  padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);
+  border:1px solid var(--border-light);transition:border-color var(--transition);
+}
+.sim-result__item:hover{border-color:var(--gold);}
+.sim-result__item span{font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
+.sim-result__item strong{font-size:var(--text-md);font-weight:800;color:var(--apple-dark);}
+
+/* Mensualité highlight */
+.sim-result__item.highlight{
+  background:linear-gradient(135deg,var(--apple-dark),#0a1628);
+  border-color:var(--gold);
+  grid-column:span 2;
+  box-shadow:var(--shadow-gold);
+}
+.sim-result__item.highlight span{color:rgba(255,255,255,.6);}
+.sim-result__item.highlight strong{
+  color:var(--gold-bright);font-size:var(--text-2xl);
+  text-shadow:0 0 20px rgba(201,168,76,.4);
+}
+
+@media(max-width:900px){.simulation-layout{grid-template-columns:1fr;}}
+@media(max-width:480px){
+  .sim-result__grid{grid-template-columns:1fr;}
+  .sim-result__item.highlight{grid-column:span 1;}
+}

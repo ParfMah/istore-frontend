@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="assets/js/page-loader.js"></script>
+<title>Produit — iStore Pro</title>
+  <link rel="stylesheet" href="assets/css/global.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <link rel="stylesheet" href="assets/css/pages/produit.css"/>
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="header__logo"><img src="assets/images/logo-header.svg" alt="iStore Pro" style="height:38px;width:auto;display:block;" /></a>
+    <nav class="header__nav" id="mainNav">
+      <a href="index.html"      class="nav-link">Accueil</a>
+      <a href="catalogue.html"  class="nav-link">Catalogue</a>
+      <a href="simulation.html" class="nav-link">Simuler un crédit</a>
+      <a href="a-propos.html"   class="nav-link">À propos</a>
+      <a href="contact.html"    class="nav-link">Contact</a>
+    </nav>
+    <div class="header__actions"><a href="connexion.html" class="btn btn--outline" id="authBtn">Connexion</a></div>
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+  </div>
+</header>
+<main class="container product-detail" id="productDetail">
+  <div class="loading-spinner">Chargement du produit…</div>
+</main>
+<footer class="footer"><div class="footer__bottom"><p>© 2025 iStore Pro. Tous droits réservés.</p></div></footer>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/products.data.js"></script>
+<script src="assets/js/produit.js"></script>
+</body>
+</html>

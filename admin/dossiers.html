@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="../assets/js/page-loader.js"></script>
+<title>Dossiers — iStore Pro Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="stylesheet" href="../assets/css/admin.css"/>
+  <script src="../assets/js/admin.guard.js"></script>
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__logo" style="-webkit-text-fill-color:initial;background:none;padding:1rem 1.25rem;">
+  <img src="../assets/images/logo-header.svg" alt="iStore Pro" style="height:34px;width:auto;filter:brightness(1.1)"/>
+</div>
+    <nav class="admin-sidebar__nav">
+      <div class="admin-nav-section">Principal</div>
+      <a href="index.html"      class="admin-nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="produits.html"   class="admin-nav-link"><span class="nav-icon">📱</span> Produits</a>
+      <a href="clients.html"    class="admin-nav-link"><span class="nav-icon">👥</span> Clients</a>
+      <div class="admin-nav-section">Commandes</div>
+      <a href="commandes.html"  class="admin-nav-link"><span class="nav-icon">📦</span> Commandes</a>
+      <div class="admin-nav-section">Crédit</div>
+      <a href="dossiers.html"   class="admin-nav-link active"><span class="nav-icon">📂</span> Dossiers</a>
+      <a href="paiements.html"  class="admin-nav-link"><span class="nav-icon">💳</span> Paiements</a>
+      <a href="quittances.html" class="admin-nav-link"><span class="nav-icon">🧾</span> Quittances</a>
+      <div class="admin-nav-section">Compte</div>
+      <a href="../index.html"   class="admin-nav-link"><span class="nav-icon">🌐</span> Voir le site</a>
+      <a href="#" onclick="adminLogout()" class="admin-nav-link"><span class="nav-icon">🚪</span> Déconnexion</a>
+    </nav>
+    <div class="admin-sidebar__bottom">
+      <div class="admin-user">
+        <div class="admin-user__avatar" id="adminAvatar">A</div>
+        <div class="admin-user__info"><strong id="adminName">Admin</strong><span>Administrateur</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="admin-topbar__title">Dossiers de crédit</h1>
+    </div>
+    <div class="admin-content">
+
+      <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;">
+        <select id="filterStatus" class="select-input" style="width:200px;">
+          <option value="">Tous</option>
+          <option value="EN_ATTENTE">En attente</option>
+          <option value="EN_COURS">En cours</option>
+          <option value="TERMINE">Terminé</option>
+        </select>
+        <button class="btn btn--primary" onclick="loadDossiers()">Filtrer</button>
+        <span id="totalCount" style="font-size:var(--text-sm);color:var(--text-muted);margin-left:auto;"></span>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr>
+              <th>Client</th><th>Produit</th><th>Total crédit</th><th>Apport</th>
+              <th>Payé</th><th>Restant</th><th>Statut</th><th>Date</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="dossiersBody">
+              <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DÉTAIL DOSSIER -->
+  <div class="modal-overlay" id="dossierModal" style="display:none;">
+    <div class="modal" style="max-width:680px;">
+      <div class="modal__header">
+        <h3>Détail du dossier</h3>
+        <button class="modal__close" onclick="document.getElementById('dossierModal').style.display='none'">✕</button>
+      </div>
+      <div class="modal__body" id="dossierModalBody"></div>
+      <div class="modal__footer">
+        <select id="modalStatus" class="select-input" style="width:180px;">
+          <option value="EN_ATTENTE">En attente</option>
+          <option value="EN_COURS">En cours</option>
+          <option value="TERMINE">Terminé</option>
+        </select>
+        <button class="btn btn--primary" onclick="updateDossierStatus()">Mettre à jour</button>
+        <button class="btn btn--ghost" onclick="document.getElementById('dossierModal').style.display='none'">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script>
+    function adminLogout() { localStorage.clear(); window.location.href='../connexion.html'; }
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!localStorage.getItem('token') || user.role !== 'admin') window.location.href = '../connexion.html';
+    document.getElementById('adminName').textContent   = user.firstname || 'Admin';
+    document.getElementById('adminAvatar').textContent = (user.firstname||'A')[0].toUpperCase();
+
+    let currentDossierId = null;
+
+    async function loadDossiers() {
+      const status = document.getElementById('filterStatus').value;
+      const url    = status ? `/dossiers?status=${status}&limit=100` : '/dossiers?limit=100';
+      const tbody  = document.getElementById('dossiersBody');
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>';
+      try {
+        const res = await API.get(url, true);
+        const list = res.dossiers || [];
+        document.getElementById('totalCount').textContent = `${list.length} dossier(s)`;
+
+        const sBadge = { EN_ATTENTE:'status--pending', EN_COURS:'status--active', TERMINE:'status--done' };
+        const sLabel = { EN_ATTENTE:'En attente', EN_COURS:'En cours', TERMINE:'Terminé' };
+
+        tbody.innerHTML = list.length ? list.map(d => `
+          <tr>
+            <td><strong>${d.client?.firstname||''} ${d.client?.lastname||''}</strong><br>
+            <small style="color:var(--text-muted)">${d.client?.email||''}</small></td>
+            <td>${d.product?.name||'—'}<br><small style="color:var(--text-muted)">${d.product?.storage||''}</small></td>
+            <td><strong>${formatPrice(d.coutTotalCredit)}</strong></td>
+            <td>${formatPrice(d.apport)}</td>
+            <td style="color:var(--success)">${formatPrice(d.montantPaye||0)}</td>
+            <td style="color:var(--error)">${formatPrice(d.montantRestant)}</td>
+            <td><span class="status ${sBadge[d.status]||''}">${sLabel[d.status]||d.status}</span></td>
+            <td>${formatDate(d.createdAt)}</td>
+            <td>
+              <button class="btn btn--outline btn--sm" onclick="openDossierModal('${d._id}','${d.status}')">Détail</button>
+              <a href="paiements.html" class="btn btn--ghost btn--sm">Paiements</a>
+            </td>
+          </tr>`).join('') :
+          '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Aucun dossier.</td></tr>';
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--error);">Erreur : ${e.message}</td></tr>`;
+      }
+    }
+
+    async function openDossierModal(id, status) {
+      currentDossierId = id;
+      document.getElementById('modalStatus').value = status;
+      const body = document.getElementById('dossierModalBody');
+      body.innerHTML = '<div class="loading-spinner">Chargement…</div>';
+      document.getElementById('dossierModal').style.display = 'flex';
+      try {
+        const d = await API.get(`/dossiers/${id}`, true);
+        const pct = Math.round(((d.montantPaye||0)/d.coutTotalCredit)*100);
+        body.innerHTML = `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;font-size:var(--text-sm);">
+            <div><span style="color:var(--text-muted);">Client</span><br><strong>${d.client?.firstname} ${d.client?.lastname}</strong><br>${d.client?.email}<br>${d.client?.phone||''}</div>
+            <div><span style="color:var(--text-muted);">Produit</span><br><strong>${d.product?.name}</strong><br>${d.product?.storage} · ${d.product?.color}</div>
+            <div><span style="color:var(--text-muted);">Prix total</span><br><strong>${formatPrice(d.priceTotal)}</strong></div>
+            <div><span style="color:var(--text-muted);">Apport versé</span><br><strong>${formatPrice(d.apport)}</strong></div>
+            <div><span style="color:var(--text-muted);">Montant financé</span><br><strong>${formatPrice(d.montantFinance)}</strong></div>
+            <div><span style="color:var(--text-muted);">Taux d'intérêt</span><br><strong>${(d.tauxInteret*100).toFixed(1)}%</strong></div>
+            <div><span style="color:var(--text-muted);">Mensualité</span><br><strong>${formatPrice(d.mensualite)} × ${d.dureesMois} mois</strong></div>
+            <div><span style="color:var(--text-muted);">Coût total crédit</span><br><strong>${formatPrice(d.coutTotalCredit)}</strong></div>
+            <div><span style="color:var(--text-muted);">Déjà payé</span><br><strong style="color:var(--success)">${formatPrice(d.montantPaye||0)}</strong></div>
+            <div><span style="color:var(--text-muted);">Reste à payer</span><br><strong style="color:var(--error)">${formatPrice(d.montantRestant)}</strong></div>
+          </div>
+          <div style="height:8px;background:var(--border-light);border-radius:99px;margin-bottom:.5rem;">
+            <div style="height:100%;width:${pct}%;background:var(--success);border-radius:99px;"></div>
+          </div>
+          <p style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:1rem;">${pct}% remboursé</p>
+          ${d.notesAdmin ? `<div style="background:var(--bg-alt);border-radius:var(--radius);padding:1rem;font-size:var(--text-sm);"><strong>Note admin :</strong> ${d.notesAdmin}</div>` : ''}
+        `;
+      } catch(e) {
+        body.innerHTML = `<p style="color:var(--error)">Erreur : ${e.message}</p>`;
+      }
+    }
+
+    async function updateDossierStatus() {
+      if (!currentDossierId) return;
+      const status = document.getElementById('modalStatus').value;
+      try {
+        await API.put(`/dossiers/${currentDossierId}/status`, { status }, true);
+        showToast('Statut mis à jour.', 'success');
+        document.getElementById('dossierModal').style.display = 'none';
+        loadDossiers();
+      } catch(e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDossiers);
+  </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="../assets/js/page-loader.js"></script>
+<title>Clients — iStore Pro Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="stylesheet" href="../assets/css/admin.css"/>
+  <script src="../assets/js/admin.guard.js"></script>
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__logo" style="-webkit-text-fill-color:initial;background:none;padding:1rem 1.25rem;">
+  <img src="../assets/images/logo-header.svg" alt="iStore Pro" style="height:34px;width:auto;filter:brightness(1.1)"/>
+</div>
+    <nav class="admin-sidebar__nav">
+      <div class="admin-nav-section">Principal</div>
+      <a href="index.html"      class="admin-nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="produits.html"   class="admin-nav-link"><span class="nav-icon">📱</span> Produits</a>
+      <a href="clients.html"    class="admin-nav-link active"><span class="nav-icon">👥</span> Clients</a>
+      <div class="admin-nav-section">Commandes</div>
+      <a href="commandes.html"  class="admin-nav-link"><span class="nav-icon">📦</span> Commandes</a>
+      <div class="admin-nav-section">Crédit</div>
+      <a href="dossiers.html"   class="admin-nav-link"><span class="nav-icon">📂</span> Dossiers</a>
+      <a href="paiements.html"  class="admin-nav-link"><span class="nav-icon">💳</span> Paiements</a>
+      <a href="quittances.html" class="admin-nav-link"><span class="nav-icon">🧾</span> Quittances</a>
+      <div class="admin-nav-section">Compte</div>
+      <a href="../index.html"   class="admin-nav-link"><span class="nav-icon">🌐</span> Voir le site</a>
+      <a href="#" onclick="adminLogout()" class="admin-nav-link"><span class="nav-icon">🚪</span> Déconnexion</a>
+    </nav>
+    <div class="admin-sidebar__bottom">
+      <div class="admin-user">
+        <div class="admin-user__avatar" id="adminAvatar">A</div>
+        <div class="admin-user__info"><strong id="adminName">Admin</strong><span>Administrateur</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="admin-topbar__title">Gestion des clients</h1>
+    </div>
+    <div class="admin-content">
+
+      <div class="admin-search">
+        <input type="text" id="searchInput" class="form-input" placeholder="Rechercher par nom ou email…"/>
+        <button class="btn btn--ghost" onclick="filterClients()">Rechercher</button>
+        <span id="totalCount" style="font-size:var(--text-sm);color:var(--text-muted);margin-left:auto;"></span>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr>
+              <th>Client</th><th>Email</th><th>Téléphone</th><th>Inscription</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="clientsBody">
+              <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL DÉTAIL CLIENT -->
+  <div class="modal-overlay" id="clientModal" style="display:none;">
+    <div class="modal" style="max-width:600px;">
+      <div class="modal__header">
+        <h3>Fiche client</h3>
+        <button class="modal__close" onclick="document.getElementById('clientModal').style.display='none'">✕</button>
+      </div>
+      <div class="modal__body" id="clientModalBody">
+        <div class="loading-spinner">Chargement…</div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="document.getElementById('clientModal').style.display='none'">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script>
+    function adminLogout() { localStorage.clear(); window.location.href='../connexion.html'; }
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!localStorage.getItem('token') || user.role !== 'admin') window.location.href = '../connexion.html';
+    document.getElementById('adminName').textContent   = user.firstname || 'Admin';
+    document.getElementById('adminAvatar').textContent = (user.firstname||'A')[0].toUpperCase();
+
+    let allClients = [];
+
+    async function loadClients() {
+      const tbody = document.getElementById('clientsBody');
+      try {
+        const res  = await API.get('/admin/clients?limit=200', true);
+        allClients = res.clients || [];
+        document.getElementById('totalCount').textContent = `${res.total} client(s)`;
+        renderClients(allClients);
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--error);text-align:center;padding:2rem;">Erreur : ${e.message}</td></tr>`;
+      }
+    }
+
+    function renderClients(list) {
+      const tbody = document.getElementById('clientsBody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Aucun client.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(c => `
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:.75rem;">
+              <div style="width:36px;height:36px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--text-sm);flex-shrink:0;">
+                ${(c.firstname||'?')[0].toUpperCase()}
+              </div>
+              <div>
+                <strong>${c.firstname} ${c.lastname}</strong>
+              </div>
+            </div>
+          </td>
+          <td style="color:var(--text-secondary);">${c.email}</td>
+          <td style="color:var(--text-secondary);">${c.phone || '—'}</td>
+          <td>${formatDate(c.createdAt)}</td>
+          <td>
+            <button class="btn btn--outline btn--sm" onclick="openClientModal('${c._id}')">Voir détail</button>
+            <a href="dossiers.html" class="btn btn--ghost btn--sm">Dossiers</a>
+          </td>
+        </tr>`).join('');
+    }
+
+    function filterClients() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      if (!search) { renderClients(allClients); return; }
+      const filtered = allClients.filter(c =>
+        `${c.firstname} ${c.lastname}`.toLowerCase().includes(search) ||
+        c.email.toLowerCase().includes(search) ||
+        (c.phone||'').includes(search)
+      );
+      document.getElementById('totalCount').textContent = `${filtered.length} résultat(s)`;
+      renderClients(filtered);
+    }
+
+    async function openClientModal(clientId) {
+      document.getElementById('clientModal').style.display = 'flex';
+      const body = document.getElementById('clientModalBody');
+      body.innerHTML = '<div class="loading-spinner">Chargement…</div>';
+      try {
+        // Charger dossiers du client
+        const [allDossiers, allPayments] = await Promise.all([
+          API.get('/dossiers?limit=100', true),
+          API.get('/payments?limit=100', true)
+        ]);
+        const c         = allClients.find(x => x._id === clientId);
+        const dossiers  = (allDossiers.dossiers||[]).filter(d => d.client?._id === clientId || d.client === clientId);
+        const payments  = (allPayments.payments||[]).filter(p => p.client?._id === clientId || p.client === clientId);
+        const totalPaye = payments.filter(p=>p.statut==='VALIDE').reduce((s,p)=>s+p.montant,0);
+
+        body.innerHTML = `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;font-size:var(--text-sm);">
+            <div><span style="color:var(--text-muted);">Nom</span><br><strong>${c?.firstname} ${c?.lastname}</strong></div>
+            <div><span style="color:var(--text-muted);">Email</span><br><strong>${c?.email}</strong></div>
+            <div><span style="color:var(--text-muted);">Téléphone</span><br><strong>${c?.phone||'—'}</strong></div>
+            <div><span style="color:var(--text-muted);">Inscrit le</span><br><strong>${formatDate(c?.createdAt)}</strong></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.5rem;">
+            <div style="background:var(--bg-alt);border-radius:var(--radius);padding:.75rem;text-align:center;">
+              <p style="font-size:var(--text-xs);color:var(--text-muted);">Dossiers</p>
+              <strong style="font-size:var(--text-xl);">${dossiers.length}</strong>
+            </div>
+            <div style="background:var(--bg-alt);border-radius:var(--radius);padding:.75rem;text-align:center;">
+              <p style="font-size:var(--text-xs);color:var(--text-muted);">Paiements validés</p>
+              <strong style="font-size:var(--text-xl);">${payments.filter(p=>p.statut==='VALIDE').length}</strong>
+            </div>
+            <div style="background:var(--bg-alt);border-radius:var(--radius);padding:.75rem;text-align:center;">
+              <p style="font-size:var(--text-xs);color:var(--text-muted);">Total payé</p>
+              <strong style="font-size:var(--text-xl);color:var(--success);">${formatPrice(totalPaye)}</strong>
+            </div>
+          </div>
+          ${dossiers.length ? `
+          <h4 style="font-size:var(--text-sm);margin-bottom:.75rem;">Dossiers de crédit</h4>
+          ${dossiers.map(d => `
+            <div style="background:var(--bg-alt);border-radius:var(--radius);padding:.75rem;margin-bottom:.5rem;font-size:var(--text-sm);display:flex;justify-content:space-between;align-items:center;">
+              <span>${d.product?.name||'—'} · ${formatPrice(d.coutTotalCredit)}</span>
+              <span style="color:var(--error);">Reste : ${formatPrice(d.montantRestant)}</span>
+            </div>`).join('')}` : '<p style="color:var(--text-muted);">Aucun dossier.</p>'}
+        `;
+      } catch(e) {
+        body.innerHTML = `<p style="color:var(--error);">Erreur : ${e.message}</p>`;
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('keyup', debounce(filterClients, 300));
+    document.addEventListener('DOMContentLoaded', loadClients);
+  </script>
+</body>
+</html>

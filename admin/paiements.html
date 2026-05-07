@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="../assets/js/page-loader.js"></script>
+<title>Paiements — iStore Pro Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="stylesheet" href="../assets/css/admin.css"/>
+  <script src="../assets/js/admin.guard.js"></script>
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__logo" style="-webkit-text-fill-color:initial;background:none;padding:1rem 1.25rem;">
+  <img src="../assets/images/logo-header.svg" alt="iStore Pro" style="height:34px;width:auto;filter:brightness(1.1)"/>
+</div>
+    <nav class="admin-sidebar__nav">
+      <div class="admin-nav-section">Principal</div>
+      <a href="index.html"      class="admin-nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="produits.html"   class="admin-nav-link"><span class="nav-icon">📱</span> Produits</a>
+      <a href="clients.html"    class="admin-nav-link"><span class="nav-icon">👥</span> Clients</a>
+      <div class="admin-nav-section">Commandes</div>
+      <a href="commandes.html"  class="admin-nav-link"><span class="nav-icon">📦</span> Commandes</a>
+      <div class="admin-nav-section">Crédit</div>
+      <a href="dossiers.html"   class="admin-nav-link"><span class="nav-icon">📂</span> Dossiers</a>
+      <a href="paiements.html"  class="admin-nav-link active"><span class="nav-icon">💳</span> Paiements</a>
+      <a href="quittances.html" class="admin-nav-link"><span class="nav-icon">🧾</span> Quittances</a>
+      <div class="admin-nav-section">Compte</div>
+      <a href="../index.html"   class="admin-nav-link"><span class="nav-icon">🌐</span> Voir le site</a>
+      <a href="#" onclick="adminLogout()" class="admin-nav-link"><span class="nav-icon">🚪</span> Déconnexion</a>
+    </nav>
+    <div class="admin-sidebar__bottom">
+      <div class="admin-user">
+        <div class="admin-user__avatar" id="adminAvatar">A</div>
+        <div class="admin-user__info"><strong id="adminName">Admin</strong><span>Administrateur</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="admin-topbar__title">Gestion des paiements</h1>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- Filtres -->
+      <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;">
+        <select id="filterStatut" class="select-input" style="width:200px;">
+          <option value="">Tous les statuts</option>
+          <option value="EN_ATTENTE" selected>En attente</option>
+          <option value="VALIDE">Validés</option>
+          <option value="REJETE">Rejetés</option>
+        </select>
+        <button class="btn btn--primary" onclick="loadPayments()">Filtrer</button>
+        <span id="totalCount" style="font-size:var(--text-sm);color:var(--text-muted);margin-left:auto;"></span>
+      </div>
+
+      <!-- Table -->
+      <div class="admin-card">
+        <div class="admin-table-wrap">
+          <table class="admin-table" id="paymentsTable">
+            <thead><tr>
+              <th>Date</th><th>Client</th><th>Montant</th><th>Méthode</th>
+              <th>Réf. externe</th><th>Reste avant</th><th>Statut</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="paymentsBody">
+              <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL VALIDATION -->
+  <div class="modal-overlay" id="validateModal" style="display:none;">
+    <div class="modal">
+      <div class="modal__header">
+        <h3>Valider le paiement</h3>
+        <button class="modal__close" onclick="closeValidateModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <div id="validateAlert" class="alert" style="display:none;"></div>
+
+        <!-- Récapitulatif -->
+        <div style="background:var(--bg-alt);border-radius:var(--radius-md);padding:1.25rem;margin-bottom:1.5rem;">
+          <h4 style="margin-bottom:1rem;font-size:var(--text-sm);color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;">Récapitulatif</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;font-size:var(--text-sm);">
+            <div><span style="color:var(--text-muted);">Client</span><br><strong id="vClient">—</strong></div>
+            <div><span style="color:var(--text-muted);">Produit</span><br><strong id="vProduit">—</strong></div>
+            <div><span style="color:var(--text-muted);">Montant à valider</span><br><strong id="vMontant" style="color:var(--primary);font-size:1.1em;">—</strong></div>
+            <div><span style="color:var(--text-muted);">Méthode</span><br><strong id="vMethode">—</strong></div>
+            <div><span style="color:var(--text-muted);">Reste avant</span><br><strong id="vAvant">—</strong></div>
+            <div><span style="color:var(--text-muted);">Reste après</span><br><strong id="vApres" style="color:var(--success);">—</strong></div>
+          </div>
+        </div>
+
+        <!-- Avertissement anti-double validation -->
+        <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--radius);padding:1rem;font-size:var(--text-sm);color:#92400e;">
+          ⚠️ <strong>Cette action est irréversible.</strong> Une quittance PDF sera générée automatiquement et envoyée au client par email. Vérifiez le montant avant de confirmer.
+        </div>
+
+        <input type="hidden" id="validatePaymentId"/>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeValidateModal()">Annuler</button>
+        <button class="btn btn--success" id="confirmValidateBtn" onclick="confirmValidation()">
+          ✓ Confirmer la validation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL REJET -->
+  <div class="modal-overlay" id="rejectModal" style="display:none;">
+    <div class="modal">
+      <div class="modal__header">
+        <h3>Rejeter le paiement</h3>
+        <button class="modal__close" onclick="closeRejectModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <div id="rejectAlert" class="alert" style="display:none;"></div>
+        <div class="form-group">
+          <label>Motif du rejet (optionnel)</label>
+          <textarea id="rejectMotif" class="form-input" rows="3"
+            placeholder="Ex : Référence de transaction introuvable…"></textarea>
+        </div>
+        <input type="hidden" id="rejectPaymentId"/>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeRejectModal()">Annuler</button>
+        <button class="btn btn--danger" onclick="confirmReject()">Rejeter</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script>
+    function adminLogout() { localStorage.clear(); window.location.href='../connexion.html'; }
+
+    let currentPayments = [];
+
+    // Auth check
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!localStorage.getItem('token') || user.role !== 'admin')
+      window.location.href = '../connexion.html';
+    document.getElementById('adminName').textContent   = user.firstname || 'Admin';
+    document.getElementById('adminAvatar').textContent = (user.firstname||'A')[0].toUpperCase();
+
+    async function loadPayments() {
+      const statut = document.getElementById('filterStatut').value;
+      const url    = statut ? `/payments?statut=${statut}&limit=100` : '/payments?limit=100';
+      const tbody  = document.getElementById('paymentsBody');
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>';
+
+      try {
+        const res = await API.get(url, true);
+        currentPayments = res.payments || [];
+        document.getElementById('totalCount').textContent = `${currentPayments.length} paiement(s)`;
+
+        if (!currentPayments.length) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Aucun paiement trouvé.</td></tr>';
+          return;
+        }
+
+        const sBadge = { EN_ATTENTE:'status--pending', VALIDE:'status--active', REJETE:'status--error' };
+        const sLabel = { EN_ATTENTE:'En attente', VALIDE:'Validé', REJETE:'Rejeté' };
+
+        tbody.innerHTML = currentPayments.map(p => {
+          const canValidate = !p.valideParAdmin && p.statut === 'EN_ATTENTE';
+          const canReject   = p.statut === 'EN_ATTENTE';
+          return `
+          <tr id="row-${p._id}">
+            <td>${formatDate(p.createdAt)}</td>
+            <td>
+              <strong>${p.client?.firstname||''} ${p.client?.lastname||''}</strong><br>
+              <small style="color:var(--text-muted)">${p.client?.email||''}</small>
+            </td>
+            <td><strong style="color:var(--primary);font-size:var(--text-md)">${formatPrice(p.montant)}</strong></td>
+            <td>${p.methode || '—'}</td>
+            <td style="color:var(--text-muted);font-size:var(--text-xs)">${p.referenceExterne || '—'}</td>
+            <td>${p.montantAvantPaiement ? formatPrice(p.montantAvantPaiement) : '—'}</td>
+            <td><span class="status ${sBadge[p.statut]||''}">${sLabel[p.statut]||p.statut}</span></td>
+            <td>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+                ${canValidate ? `
+                  <button class="btn btn--success btn--sm" onclick="openValidateModal('${p._id}')">
+                    ✓ Valider
+                  </button>` : ''}
+                ${canReject ? `
+                  <button class="btn btn--danger btn--sm" onclick="openRejectModal('${p._id}')">
+                    ✗ Rejeter
+                  </button>` : ''}
+                ${p.quittance?.pdfUrl ? `
+                  <a href="${p.quittance.pdfUrl}" target="_blank" class="btn btn--ghost btn--sm">
+                    🧾 PDF
+                  </a>` : ''}
+                ${!canValidate && !canReject && !p.quittance?.pdfUrl ? '<span style="color:var(--text-muted);font-size:var(--text-xs);">—</span>' : ''}
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--error);">Erreur : ${e.message}</td></tr>`;
+      }
+    }
+
+    // ── Modal Validation ──────────────────────────────────────
+    function openValidateModal(paymentId) {
+      const p = currentPayments.find(x => x._id === paymentId);
+      if (!p) return;
+
+      // Bloquer si déjà validé (garde côté frontend en plus du backend)
+      if (p.valideParAdmin || p.statut === 'VALIDE') {
+        showToast('Ce paiement est déjà validé.', 'error'); return;
+      }
+
+      const resteApres = Math.max(0, (p.montantAvantPaiement || 0) - p.montant);
+      document.getElementById('vClient').textContent  = `${p.client?.firstname||''} ${p.client?.lastname||''}`;
+      document.getElementById('vProduit').textContent = p.dossier ? `Dossier crédit` : '—';
+      document.getElementById('vMontant').textContent = formatPrice(p.montant);
+      document.getElementById('vMethode').textContent = p.methode;
+      document.getElementById('vAvant').textContent   = formatPrice(p.montantAvantPaiement || 0);
+      document.getElementById('vApres').textContent   = formatPrice(resteApres);
+      document.getElementById('validatePaymentId').value = paymentId;
+      document.getElementById('validateAlert').style.display = 'none';
+      document.getElementById('confirmValidateBtn').disabled = false;
+      document.getElementById('confirmValidateBtn').textContent = '✓ Confirmer la validation';
+      document.getElementById('validateModal').style.display = 'flex';
+    }
+    function closeValidateModal() {
+      document.getElementById('validateModal').style.display = 'none';
+    }
+
+    async function confirmValidation() {
+      const id  = document.getElementById('validatePaymentId').value;
+      const btn = document.getElementById('confirmValidateBtn');
+      const alertEl = document.getElementById('validateAlert');
+
+      // Désactiver immédiatement pour empêcher double-clic
+      btn.disabled = true;
+      btn.textContent = 'Validation en cours…';
+
+      try {
+        const res = await API.put(`/payments/${id}/valider`, {}, true);
+        showAlert(alertEl, 'success', `✓ Paiement validé. Quittance : ${res.receipt?.numero}`);
+        btn.textContent = '✓ Validé !';
+        setTimeout(() => { closeValidateModal(); loadPayments(); }, 2000);
+      } catch(e) {
+        showAlert(alertEl, 'error', e.message || 'Erreur lors de la validation.');
+        btn.disabled = false;
+        btn.textContent = '✓ Confirmer la validation';
+      }
+    }
+
+    // ── Modal Rejet ───────────────────────────────────────────
+    function openRejectModal(paymentId) {
+      document.getElementById('rejectPaymentId').value = paymentId;
+      document.getElementById('rejectMotif').value     = '';
+      document.getElementById('rejectAlert').style.display = 'none';
+      document.getElementById('rejectModal').style.display  = 'flex';
+    }
+    function closeRejectModal() {
+      document.getElementById('rejectModal').style.display = 'none';
+    }
+    async function confirmReject() {
+      const id    = document.getElementById('rejectPaymentId').value;
+      const motif = document.getElementById('rejectMotif').value.trim();
+      try {
+        await API.put(`/payments/${id}/rejeter`, { motif }, true);
+        showToast('Paiement rejeté.', 'error');
+        closeRejectModal();
+        loadPayments();
+      } catch(e) {
+        showAlert(document.getElementById('rejectAlert'), 'error', e.message);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadPayments);
+  </script>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="../assets/js/page-loader.js"></script>
+<title>Produits — iStore Pro Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="stylesheet" href="../assets/css/admin.css"/>
+  <script src="../assets/js/admin.guard.js"></script>
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__logo" style="-webkit-text-fill-color:initial;background:none;padding:1rem 1.25rem;">
+  <img src="../assets/images/logo-header.svg" alt="iStore Pro" style="height:34px;width:auto;filter:brightness(1.1)"/>
+</div>
+    <nav class="admin-sidebar__nav">
+      <div class="admin-nav-section">Principal</div>
+      <a href="index.html"      class="admin-nav-link"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="produits.html"   class="admin-nav-link active"><span class="nav-icon">📱</span> Produits</a>
+      <a href="clients.html"    class="admin-nav-link"><span class="nav-icon">👥</span> Clients</a>
+      <div class="admin-nav-section">Commandes</div>
+      <a href="commandes.html"  class="admin-nav-link"><span class="nav-icon">📦</span> Commandes</a>
+      <div class="admin-nav-section">Crédit</div>
+      <a href="dossiers.html"   class="admin-nav-link"><span class="nav-icon">📂</span> Dossiers</a>
+      <a href="paiements.html"  class="admin-nav-link"><span class="nav-icon">💳</span> Paiements</a>
+      <a href="quittances.html" class="admin-nav-link"><span class="nav-icon">🧾</span> Quittances</a>
+      <div class="admin-nav-section">Compte</div>
+      <a href="../index.html"   class="admin-nav-link"><span class="nav-icon">🌐</span> Voir le site</a>
+      <a href="#" onclick="adminLogout()" class="admin-nav-link"><span class="nav-icon">🚪</span> Déconnexion</a>
+    </nav>
+    <div class="admin-sidebar__bottom">
+      <div class="admin-user">
+        <div class="admin-user__avatar" id="adminAvatar">A</div>
+        <div class="admin-user__info"><strong id="adminName">Admin</strong><span>Administrateur</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="admin-topbar__title">Gestion des produits</h1>
+      <div class="admin-topbar__actions">
+        <button class="btn btn--primary" onclick="openProductModal()">+ Ajouter un produit</button>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      <div class="admin-search">
+        <input type="text" id="searchInput" class="form-input" placeholder="Rechercher un produit…"/>
+        <select id="filterCondition" class="select-input" style="width:180px;">
+          <option value="">Tous les états</option>
+          <option value="neuf">Neuf</option>
+          <option value="occasion">Occasion</option>
+        </select>
+        <button class="btn btn--ghost" onclick="loadProducts()">Rechercher</button>
+        <span id="totalCount" style="font-size:var(--text-sm);color:var(--text-muted);margin-left:auto;"></span>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr>
+              <th>Produit</th><th>Variante</th><th>État</th><th>Prix réduit</th>
+              <th>Stock</th><th>Vedette</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="productsBody">
+              <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PRODUIT (Ajout / Modification) -->
+  <div class="modal-overlay" id="productModal" style="display:none;">
+    <div class="modal" style="max-width:720px;">
+      <div class="modal__header">
+        <h3 id="modalTitle">Ajouter un produit</h3>
+        <button class="modal__close" onclick="closeProductModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <div id="productAlert" class="alert" style="display:none;"></div>
+        <input type="hidden" id="productId"/>
+
+        <div class="admin-form-grid">
+          <div class="form-group">
+            <label>Nom *</label>
+            <input type="text" id="pName" class="form-input" placeholder="iPhone 17 Pro"/>
+          </div>
+          <div class="form-group">
+            <label>Modèle *</label>
+            <select id="pModel" class="select-input">
+              <option value="iPhone 13">iPhone 13</option>
+              <option value="iPhone 14">iPhone 14</option>
+              <option value="iPhone 15">iPhone 15</option>
+              <option value="iPhone 16">iPhone 16</option>
+              <option value="iPhone 17">iPhone 17</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Variante *</label>
+            <select id="pVariant" class="select-input">
+              <option value="standard">Standard</option>
+              <option value="pro">Pro</option>
+              <option value="pro-max">Pro Max</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>État *</label>
+            <select id="pCondition" class="select-input" onchange="toggleGrade()">
+              <option value="neuf">Neuf</option>
+              <option value="occasion">Occasion</option>
+            </select>
+          </div>
+          <div class="form-group" id="gradeGroup" style="display:none;">
+            <label>Grade</label>
+            <select id="pGrade" class="select-input">
+              <option value="A">Grade A</option>
+              <option value="B">Grade B</option>
+              <option value="C">Grade C</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Stockage</label>
+            <input type="text" id="pStorage" class="form-input" placeholder="256 Go"/>
+          </div>
+          <div class="form-group">
+            <label>Couleur</label>
+            <input type="text" id="pColor" class="form-input" placeholder="Titane naturel"/>
+          </div>
+          <div class="form-group">
+            <label>Prix original (€) *</label>
+            <input type="number" id="pPriceOriginal" class="form-input" placeholder="1549" min="0"/>
+          </div>
+          <div class="form-group">
+            <label>Prix réduit (€) *</label>
+            <input type="number" id="pPriceReduced" class="form-input" placeholder="1459" min="0"/>
+          </div>
+          <div class="form-group">
+            <label>Stock *</label>
+            <input type="number" id="pStock" class="form-input" placeholder="10" min="0"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="pDescription" class="form-input" rows="3" placeholder="Description du produit…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>URLs des images (une par ligne)</label>
+          <textarea id="pImages" class="form-input" rows="3"
+            placeholder="assets/images/products/iphone17/iphone17pro-graphite-1.jpg&#10;assets/images/products/iphone17/iphone17pro-graphite-2.jpg"></textarea>
+          <p class="form-hint">Chemins relatifs depuis le dossier frontend/</p>
+        </div>
+
+        <div class="form-group" style="display:flex;align-items:center;gap:.75rem;">
+          <input type="checkbox" id="pFeatured" style="width:16px;height:16px;accent-color:var(--primary);"/>
+          <label for="pFeatured" style="margin:0;cursor:pointer;">Produit vedette (affiché en page d'accueil)</label>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeProductModal()">Annuler</button>
+        <button class="btn btn--primary" id="saveProductBtn" onclick="saveProduct()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMATION SUPPRESSION -->
+  <div class="modal-overlay" id="deleteModal" style="display:none;">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal__header">
+        <h3>Supprimer le produit</h3>
+        <button class="modal__close" onclick="document.getElementById('deleteModal').style.display='none'">✕</button>
+      </div>
+      <div class="modal__body">
+        <p>Êtes-vous sûr de vouloir supprimer <strong id="deleteProductName"></strong> ?<br>
+        <small style="color:var(--text-muted);">Cette action est irréversible.</small></p>
+        <input type="hidden" id="deleteProductId"/>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="document.getElementById('deleteModal').style.display='none'">Annuler</button>
+        <button class="btn btn--danger" onclick="confirmDelete()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script>
+    function adminLogout() { localStorage.clear(); window.location.href='../connexion.html'; }
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!localStorage.getItem('token') || user.role !== 'admin') window.location.href = '../connexion.html';
+    document.getElementById('adminName').textContent   = user.firstname || 'Admin';
+    document.getElementById('adminAvatar').textContent = (user.firstname||'A')[0].toUpperCase();
+
+    let allProducts = [];
+
+    function toggleGrade() {
+      const cond = document.getElementById('pCondition').value;
+      document.getElementById('gradeGroup').style.display = cond === 'occasion' ? 'block' : 'none';
+    }
+
+    async function loadProducts() {
+      const tbody  = document.getElementById('productsBody');
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const cond   = document.getElementById('filterCondition').value;
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Chargement…</td></tr>';
+      try {
+        let url = '/products?limit=200';
+        if (cond) url += `&condition=${cond}`;
+        allProducts = await API.get(url);
+        let filtered = allProducts;
+        if (search) filtered = filtered.filter(p =>
+          p.name.toLowerCase().includes(search) ||
+          p.model.toLowerCase().includes(search) ||
+          (p.color||'').toLowerCase().includes(search)
+        );
+        document.getElementById('totalCount').textContent = `${filtered.length} produit(s)`;
+        const condLabel = { neuf:'Neuf', occasion:'Occasion' };
+        tbody.innerHTML = filtered.length ? filtered.map(p => `
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img src="../${p.images?.[0]||'assets/images/placeholder-phone.svg'}"
+                     style="width:40px;height:40px;object-fit:cover;border-radius:var(--radius-sm);background:var(--bg-alt);"
+                     onerror="this.src='../assets/images/placeholder-phone.svg'"/>
+                <div>
+                  <strong style="font-size:var(--text-sm);">${p.name}</strong><br>
+                  <small style="color:var(--text-muted);">${p.storage||''} · ${p.color||''}</small>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge--neutral">${p.variant}</span></td>
+            <td>${p.conditionGrade
+              ? `<span class="badge badge--success">Grade ${p.conditionGrade}</span>`
+              : `<span class="badge badge--new">Neuf</span>`}</td>
+            <td><strong style="color:var(--primary);">${formatPrice(p.priceReduced)}</strong><br>
+            <small style="text-decoration:line-through;color:var(--text-muted);">${formatPrice(p.priceOriginal)}</small></td>
+            <td><span style="color:${p.stock>3?'var(--success)':p.stock>0?'var(--warning)':'var(--error)'};font-weight:600;">${p.stock}</span></td>
+            <td>${p.featured ? '⭐' : '—'}</td>
+            <td>
+              <div style="display:flex;gap:.5rem;">
+                <button class="btn btn--outline btn--sm" onclick="openEditModal('${p._id}')">✏ Éditer</button>
+                <button class="btn btn--danger btn--sm"  onclick="openDeleteModal('${p._id}','${p.name.replace(/'/g,"\\'")}')">🗑</button>
+              </div>
+            </td>
+          </tr>`).join('') :
+          '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Aucun produit.</td></tr>';
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--error);padding:2rem;text-align:center;">Erreur : ${e.message}</td></tr>`;
+      }
+    }
+
+    // ── Modal produit ─────────────────────────────────────────
+    function openProductModal() {
+      document.getElementById('modalTitle').textContent = 'Ajouter un produit';
+      document.getElementById('productId').value = '';
+      ['pName','pStorage','pColor','pDescription','pImages'].forEach(id => document.getElementById(id).value = '');
+      ['pPriceOriginal','pPriceReduced','pStock'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('pModel').value     = 'iPhone 17';
+      document.getElementById('pVariant').value   = 'standard';
+      document.getElementById('pCondition').value = 'neuf';
+      document.getElementById('pFeatured').checked = false;
+      document.getElementById('productAlert').style.display = 'none';
+      toggleGrade();
+      document.getElementById('productModal').style.display = 'flex';
+    }
+
+    function openEditModal(id) {
+      const p = allProducts.find(x => x._id === id);
+      if (!p) return;
+      document.getElementById('modalTitle').textContent     = 'Modifier le produit';
+      document.getElementById('productId').value            = p._id;
+      document.getElementById('pName').value                = p.name;
+      document.getElementById('pModel').value               = p.model;
+      document.getElementById('pVariant').value             = p.variant;
+      document.getElementById('pCondition').value           = p.condition;
+      document.getElementById('pGrade').value               = p.conditionGrade || 'A';
+      document.getElementById('pStorage').value             = p.storage || '';
+      document.getElementById('pColor').value               = p.color || '';
+      document.getElementById('pPriceOriginal').value       = p.priceOriginal;
+      document.getElementById('pPriceReduced').value        = p.priceReduced;
+      document.getElementById('pStock').value               = p.stock;
+      document.getElementById('pDescription').value         = p.description || '';
+      document.getElementById('pImages').value              = (p.images||[]).join('\n');
+      document.getElementById('pFeatured').checked          = p.featured || false;
+      document.getElementById('productAlert').style.display = 'none';
+      toggleGrade();
+      document.getElementById('productModal').style.display = 'flex';
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').style.display = 'none';
+    }
+
+    async function saveProduct() {
+      const id  = document.getElementById('productId').value;
+      const btn = document.getElementById('saveProductBtn');
+      const alertEl = document.getElementById('productAlert');
+      const cond    = document.getElementById('pCondition').value;
+
+      const payload = {
+        name           : document.getElementById('pName').value.trim(),
+        model          : document.getElementById('pModel').value,
+        variant        : document.getElementById('pVariant').value,
+        condition      : cond,
+        conditionGrade : cond === 'occasion' ? document.getElementById('pGrade').value : null,
+        storage        : document.getElementById('pStorage').value.trim(),
+        color          : document.getElementById('pColor').value.trim(),
+        priceOriginal  : parseFloat(document.getElementById('pPriceOriginal').value),
+        priceReduced   : parseFloat(document.getElementById('pPriceReduced').value),
+        stock          : parseInt(document.getElementById('pStock').value),
+        description    : document.getElementById('pDescription').value.trim(),
+        images         : document.getElementById('pImages').value.split('\n').map(s=>s.trim()).filter(Boolean),
+        featured       : document.getElementById('pFeatured').checked
+      };
+
+      if (!payload.name || !payload.priceOriginal || !payload.priceReduced) {
+        showAlert(alertEl,'error','Nom, prix original et prix réduit sont obligatoires.');
+        return;
+      }
+
+      btn.disabled = true; btn.textContent = 'Enregistrement…';
+      try {
+        if (id) await API.put(`/products/${id}`, payload, true);
+        else    await API.post('/products', payload, true);
+        showToast(id ? 'Produit mis à jour ✓' : 'Produit ajouté ✓', 'success');
+        closeProductModal();
+        loadProducts();
+      } catch(e) {
+        showAlert(alertEl,'error', e.message);
+        btn.disabled = false; btn.textContent = 'Enregistrer';
+      }
+    }
+
+    // ── Suppression ───────────────────────────────────────────
+    function openDeleteModal(id, name) {
+      document.getElementById('deleteProductId').value      = id;
+      document.getElementById('deleteProductName').textContent = name;
+      document.getElementById('deleteModal').style.display  = 'flex';
+    }
+
+    async function confirmDelete() {
+      const id = document.getElementById('deleteProductId').value;
+      try {
+        await API.delete(`/products/${id}`, true);
+        showToast('Produit supprimé.', 'error');
+        document.getElementById('deleteModal').style.display = 'none';
+        loadProducts();
+      } catch(e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('keyup', debounce(loadProducts, 350));
+    document.addEventListener('DOMContentLoaded', loadProducts);
+  </script>
+</body>
+</html>

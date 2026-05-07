@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f5f5f7"/>
+  <rect x="130" y="60" width="140" height="280" rx="20" ry="20" fill="#d1d1d6" stroke="#c7c7cc" stroke-width="2"/>
+  <rect x="138" y="90" width="124" height="210" rx="4" ry="4" fill="#1c1c1e"/>
+  <circle cx="200" cy="75" r="5" fill="#aeaeb2"/>
+  <circle cx="200" cy="325" r="10" fill="#c7c7cc" stroke="#aeaeb2" stroke-width="1"/>
+  <text x="200" y="215" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#636366">Image à venir</text>
+</svg>

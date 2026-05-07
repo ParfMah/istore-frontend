@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="assets/js/page-loader.js"></script>
+<title>Simulateur de crédit — iStore Pro</title>
+  <link rel="stylesheet" href="assets/css/global.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <link rel="stylesheet" href="assets/css/pages/simulation.css"/>
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="header__logo"><img src="assets/images/logo-header.svg" alt="iStore Pro" style="height:38px;width:auto;display:block;" /></a>
+    <nav class="header__nav" id="mainNav">
+      <a href="index.html"      class="nav-link">Accueil</a>
+      <a href="catalogue.html"  class="nav-link">Catalogue</a>
+      <a href="simulation.html" class="nav-link active">Simuler un crédit</a>
+      <a href="a-propos.html"   class="nav-link">À propos</a>
+      <a href="contact.html"    class="nav-link">Contact</a>
+    </nav>
+    <div class="header__actions"><a href="connexion.html" class="btn btn--outline" id="authBtn">Connexion</a></div>
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+  </div>
+</header>
+
+<div class="page-hero"><div class="container"><h1>Simulateur de crédit</h1><p>Estimez vos mensualités en quelques secondes — sans engagement.</p></div></div>
+
+<main class="container simulation-layout">
+  <div class="sim-form-card">
+    <h2>Paramètres du crédit</h2>
+    <div class="form-group">
+      <label for="simProduct">Produit sélectionné</label>
+      <select id="simProduct" class="select-input"><option value="">-- Choisir un produit --</option></select>
+    </div>
+    <div class="form-group" id="manualPriceGroup" style="display:none">
+      <label for="simPrice">Ou saisir le prix (€)</label>
+      <input type="number" id="simPrice" class="form-input" placeholder="Ex : 899" min="0"/>
+    </div>
+    <div class="form-group">
+      <label for="simCondition">État de l'appareil</label>
+      <select id="simCondition" class="select-input">
+        <option value="neuf">Neuf (3%)</option>
+        <option value="grade-a">Occasion Grade A (1.5%)</option>
+        <option value="grade-b">Occasion Grade B (2%)</option>
+        <option value="grade-c">Occasion Grade C (2.5%)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="simApport">Apport initial (€) — minimum 40% <span class="badge" id="apportPct">--</span></label>
+      <input type="number" id="simApport" class="form-input" placeholder="Ex : 400" min="0"/>
+      <p class="input-hint" id="apportWarning" style="display:none;color:var(--error);">⚠ L'apport minimum est de 40% du prix total.</p>
+    </div>
+    <div class="form-group">
+      <label for="simDuration">Durée de remboursement</label>
+      <select id="simDuration" class="select-input">
+        <option value="3">3 mois</option>
+        <option value="6" selected>6 mois</option>
+        <option value="9">9 mois</option>
+        <option value="12">12 mois</option>
+        <option value="18">18 mois</option>
+        <option value="24">24 mois</option>
+      </select>
+    </div>
+    <button class="btn btn--primary btn--full" id="simulateBtn">Calculer mes mensualités</button>
+  </div>
+
+  <div class="sim-result-card" id="simResult" style="display:none">
+    <h2>Résultat de la simulation</h2>
+    <div class="sim-result__disclaimer">⚠ Simulation indicative — ne constitue pas un engagement contractuel.</div>
+    <div class="sim-result__grid">
+      <div class="sim-result__item"><span>Prix total</span><strong id="resPrix">—</strong></div>
+      <div class="sim-result__item"><span>Apport versé</span><strong id="resApport">—</strong></div>
+      <div class="sim-result__item"><span>Montant financé</span><strong id="resMontantFinance">—</strong></div>
+      <div class="sim-result__item"><span>Taux d'intérêt</span><strong id="resTaux">—</strong></div>
+      <div class="sim-result__item"><span>Intérêts totaux</span><strong id="resInterets">—</strong></div>
+      <div class="sim-result__item"><span>Durée</span><strong id="resDuree">—</strong></div>
+      <div class="sim-result__item highlight"><span>Mensualité</span><strong id="resMensualite">—</strong></div>
+      <div class="sim-result__item"><span>Coût total crédit</span><strong id="resCoutTotal">—</strong></div>
+    </div>
+    <a href="#" id="cmdLink" class="btn btn--gold btn--full btn--lg" style="margin-top:1.5rem" onclick="goToOrder()">🛍️ Commander avec ce crédit</a>
+  </div>
+</main>
+
+<footer class="footer"><div class="footer__bottom"><p>© 2025 iStore Pro. Tous droits réservés.</p></div></footer>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/products.data.js"></script>
+<script src="assets/js/simulation.js"></script>
+</body>
+</html>

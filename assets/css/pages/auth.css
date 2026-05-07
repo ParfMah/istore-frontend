@@ -1,0 +1,47 @@
+/* auth.css — iStore Pro */
+.auth-page{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#0a0f1e 0%,#0d1a35 50%,#1a1200 100%);
+  padding:var(--space-8) var(--space-4);position:relative;overflow:hidden;
+}
+.auth-page::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 60% at 60% 40%, rgba(201,168,76,.12) 0%, transparent 60%);
+  pointer-events:none;
+}
+.auth-logo{
+  font-size:var(--text-xl);font-weight:800;
+  display:flex;align-items:center;gap:var(--space-2);
+  margin-bottom:var(--space-8);text-decoration:none;
+  position:relative;z-index:1;
+  background:linear-gradient(135deg,#fff 30%,var(--gold-bright));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.auth-logo .logo-icon{font-size:2rem;-webkit-text-fill-color:initial;color:var(--gold-bright);}
+.auth-card{
+  background:rgba(255,255,255,.97);backdrop-filter:blur(20px);
+  border-radius:var(--radius-xl);box-shadow:0 24px 60px rgba(0,0,0,.4),0 0 0 1px rgba(201,168,76,.2);
+  padding:var(--space-8);width:100%;max-width:440px;position:relative;z-index:1;
+}
+/* Bordure dorée en haut */
+.auth-card::before{
+  content:'';position:absolute;top:0;left:var(--space-8);right:var(--space-8);
+  height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  border-radius:0 0 3px 3px;
+}
+
+.auth-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:var(--space-6);}
+.auth-tab{
+  flex:1;padding:var(--space-3);font-size:var(--text-sm);font-weight:600;
+  color:var(--text-muted);background:none;border:none;cursor:pointer;
+  border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all var(--transition);
+}
+.auth-tab.active{color:var(--apple-dark);border-bottom-color:var(--gold);}
+.auth-tab:hover:not(.active){color:var(--text-primary);}
+
+.auth-footer-link{text-align:center;margin-top:var(--space-5);font-size:var(--text-sm);color:var(--text-muted);}
+.auth-footer-link a{color:var(--primary);font-weight:600;}
+.auth-footer-link a:hover{color:var(--gold-dark);}
+
+@media(max-width:480px){.auth-card{padding:var(--space-6);border-radius:var(--radius-lg);}}
